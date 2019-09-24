@@ -17,8 +17,32 @@
 <li><code>抛出异常</code>:当一个方法引发异常时,方法创建异常对象并交付给运行时系统,异常对象中<code>包括异常类型和异常信息</code></li>
 <li><code>捕获异常</code>:在抛出异常后，运行时系统就开始寻找合适的<code>异常处理器(exception handler)</code>,寻找的地方就是依次留在调用<code>方法栈中的方法的集合</code>,从发生异常的方法开始，依次回查栈中的方法，找到合适的异常处理器并执行，如果没找到，则运行时系统终止。同时也意味着Java程序终止</li>
 </ul>
-<h2 id="2、Java要求对异常的处理方式"><a href="#2、Java要求对异常的处理方式" class="headerlink" title="2、Java要求对异常的处理方式"></a>2、Java要求对异常的处理方式</h2><p>对于可查异常必须捕捉、或者声明抛出。允许忽略不可查的RuntimeException和Error。</p>
-</div></article></div><div class="right-container"><div class="widget"><div class="category"><h4>分类归档</h4><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Hexo/">Hexo</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">4</span></li></ul></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/03/25/Java基础3.1 — Java相关语法/" class="next">下一篇</a></div><!--PC和WAP自适应版--><div id="SOHUCS" sid="2019/05/01/Java基础3.2 — 异常/"> </div><script>(function() {
+<h2 id="2、Java要求对异常的处理方式"><a href="#2、Java要求对异常的处理方式" class="headerlink" title="2、Java要求对异常的处理方式"></a>2、Java要求对异常的处理方式</h2><ul>
+<li>RunTimeException:由运行时系统抛出，可以忽略，</li>
+<li>Error:属于不允许发生情况，所以不捕捉</li>
+<li>可查异常:必须捕捉、或者声明抛出</li>
+</ul>
+<h2 id="3、捕捉处理异常语句try-catch-finally"><a href="#3、捕捉处理异常语句try-catch-finally" class="headerlink" title="3、捕捉处理异常语句try-catch-finally"></a>3、捕捉处理异常语句try-catch-finally</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">catch</span>(Exception1 e)&#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">catch</span>(Exception2 e)&#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>try:用于捕捉异常,后接0~n个catch块，如果没有需要加finally</li>
+<li>catch:用于处理捕捉到的异常</li>
+<li>finally:无论是否捕捉到异常,都会执行,<code>如果try或者catch中有返回语句，那么finally会在返回之前执行</code></li>
+</ul>
+<p>以下四种情况finally不会被执行</p>
+<ul>
+<li>finally出现异常</li>
+<li>前面代码使用System.exit()退出程序</li>
+<li>程序所有线程死亡</li>
+<li>关闭CPU</li>
+</ul>
+<h2 id="4、抛出异常-throws"><a href="#4、抛出异常-throws" class="headerlink" title="4、抛出异常 throws"></a>4、抛出异常 throws</h2><p>如果当前方法可能会出现异常而没有能力去处理，可以在方法声明处用<code>throws</code>抛出异常，给上一层处理</p>
+<p>###抛出规则</p>
+<ul>
+<li>对于不可查异常，不抛出也能编译通过，但是在运行时会被系统抛出</li>
+<li>可查异常，要么try-catch捕获，要么使用<code>throws</code>声明抛出</li>
+<li>抛出异常之后，方法的调用者才能进行处理，当方法调用者无法处理，应当继续抛出</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div class="category"><h4>分类归档</h4><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Hexo/">Hexo</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java基础/">Java基础</a><span class="category-list-count">6</span></li></ul></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/09/22/Java基础2.1 — Map家族之HashMap/" class="prev">PREV</a><a href="/2019/03/25/Java基础3.1 — Java相关语法/" class="next">NEXT</a></div><!--PC和WAP自适应版--><div id="SOHUCS" sid="2019/05/01/Java基础3.2 — 异常/"> </div><script>(function() {
     var appid = 'cyt6h19Ve'; 
     var conf = 'prod_0b4b95efa2ecfede2ddfb5adcef8c394'; 
     var width = window.innerWidth || document.documentElement.clientWidth; 
