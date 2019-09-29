@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java基础3.1 — 线程基础 · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java基础3.1 — 线程基础 - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java基础3.1 — 线程基础</h1><div class="post-info">2019-09-27<p class="visit"><i data-hk-page="current">-</i><span>次访问</span></p></div><div class="post-content"><h1 id="一、线程的基本概念"><a href="#一、线程的基本概念" class="headerlink" title="一、线程的基本概念"></a>一、线程的基本概念</h1><h2 id="并行-Parallel-和并发-concurrent"><a href="#并行-Parallel-和并发-concurrent" class="headerlink" title="并行(Parallel)和并发(concurrent)"></a>并行(Parallel)和并发(concurrent)</h2><ul>
+<li>并发是相对一个CPU,分时间片执行任务,同一<code>时间间隔</code>事件</li>
+<li>并行是相对多个CPU,分别同时执行任务,同一<code>时间点</code>事件</li>
+</ul>
+<h2 id="并行和串行"><a href="#并行和串行" class="headerlink" title="并行和串行"></a>并行和串行</h2><ul>
+<li>串行是执行完一个任务再去执行下一个</li>
+<li>并行是多个任务同时执行</li>
+</ul>
+<h2 id="同步和异步"><a href="#同步和异步" class="headerlink" title="同步和异步"></a>同步和异步</h2><ul>
+<li>同步是<code>顺序进行</code>，需要进行等待，协调</li>
+<li>异步在等待某一个任务执行过程中继续执行自己的任务,线程是实现异步的一个方式</li>
+</ul>
+<h2 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h2><p>多线程是程序设计的<code>逻辑概念</code>，指的是在进程中并发运行的一段<code>代码</code>，实现多个线程间切换执行</p>
+<h1 id="二、线程的状态"><a href="#二、线程的状态" class="headerlink" title="二、线程的状态"></a>二、线程的状态</h1><p>在Java类库,<code>Thread类</code>中有一个<code>State的枚举类</code>列出了线程的<code>6个状态</code></p>
+<ul>
+<li>初始(NEW)：<code>新创建</code>了一个线程对象，但还没有调用start()方法。</li>
+<li><p>可运行(RUNNABLE)：Java线程中将<code>就绪（ready）</code>和<code>运行中（running）</code>两种状态笼统地称为”运行”。<br>调用了start()方法。线程位于<code>可运行线程池</code>中,<code>等待被线程调度</code>选中，此时处于<code>就绪状态（ready）</code>。就绪状态的线程在<code>获得CPU时间片后</code>变为运行中状态（running）。</p>
+</li>
+<li><p>阻塞(BLOCKED)：表示线程<code>阻塞于锁</code>。</p>
+</li>
+<li><p>等待(WAITING)：进入该状态的线程需要等待其他线程<code>做出一些特定动作</code>（通知或中断）。</p>
+</li>
+<li><p>超时等待(TIMED_WAITING)：该状态不同于WAITING，它可以在指定的时间后<code>自行返回</code>。</p>
+</li>
+<li><p>终止(TERMINATED)：表示该线程已经<code>执行完毕</code>。</p>
+</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div class="category"><h4>分类归档</h4><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Hexo/">Hexo</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java基础/">Java基础</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java项目/">Java项目</a><span class="category-list-count">1</span></li></ul></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/09/29/Java项目基础模板/" class="prev">PREV</a><a href="/2019/09/26/Java基础2.4 — Map家族之HashTable/" class="next">NEXT</a></div><!--PC和WAP自适应版--><div id="SOHUCS" sid="2019/09/27/Java基础3.1 — 线程的基本概念/"> </div><script>(function() {
+    var appid = 'cyt6h19Ve'; 
+    var conf = 'prod_0b4b95efa2ecfede2ddfb5adcef8c394'; 
+    var width = window.innerWidth || document.documentElement.clientWidth; 
+    if (width < 960) { 
+    //- window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })();</script><div class="copyright"></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="http://apps.bdimg.com/libs/jquery/1.8.2/jquery.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>
