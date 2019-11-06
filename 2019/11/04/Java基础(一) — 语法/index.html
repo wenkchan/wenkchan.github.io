@@ -1,0 +1,220 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java基础(一) — 语法 · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java基础(一) — 语法 - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java基础(一) — 语法</h1><div class="post-info">2019-11-04<p class="visit"><i data-identity="2019/11/04/Java基础(一) — 语法/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h1 id="一、面向对象的四大特性"><a href="#一、面向对象的四大特性" class="headerlink" title="一、面向对象的四大特性"></a>一、面向对象的四大特性</h1><h2 id="1、继承性"><a href="#1、继承性" class="headerlink" title="1、继承性"></a>1、继承性</h2><p>继承性是类的一种层次模型，提供了明确表述<code>共性</code>的方法,对象的新类在类中继承派生。类可以从他的基类<code>继承</code>方法和实例变量，并且类可以<code>修改或者增加</code>新的方法使之更适合特殊的需要</p>
+<p><code>关键字:extends、class</code></p>
+<h2 id="2、多态性"><a href="#2、多态性" class="headerlink" title="2、多态性"></a>2、多态性</h2><p>多态性是对象在<code>不同时刻</code>表现出来的多种状态,是一种<code>编译时期状态</code>和<code>运行时期状态</code>不一致的现象，多态包括<code>参数多态</code>和<code>包含多态</code></p>
+<p><code>关键字:interface</code></p>
+<h2 id="3、抽象性"><a href="#3、抽象性" class="headerlink" title="3、抽象性"></a>3、抽象性</h2><p>抽象是指对一类事物的高度提炼以得到的<code>共性</code>部分,抽象不需要了解全部细节，只是一种通用的描述<code>约束</code>,抽象可以是<code>过程抽象</code>或者<code>数据抽象</code></p>
+<p><code>关键字:abstract</code></p>
+<h2 id="4、封装性"><a href="#4、封装性" class="headerlink" title="4、封装性"></a>4、封装性</h2><p>封装性是把过程和数据保卫起来使得数据的访问只能通过已定义的接口，保证了对象被访问只能通过已定义的接口，保证了对象被访问的<code>隐私性和可靠性</code></p>
+<blockquote>
+<p>面向对象的特性:更多的实践使用就是设计模式</p>
+</blockquote>
+<h1 id="二、类"><a href="#二、类" class="headerlink" title="二、类"></a>二、类</h1><h1 id="三、基础修饰符"><a href="#三、基础修饰符" class="headerlink" title="三、基础修饰符"></a>三、基础修饰符</h1><h2 id="1、权限修饰符"><a href="#1、权限修饰符" class="headerlink" title="1、权限修饰符"></a>1、权限修饰符</h2><ul>
+<li><code>private</code>:只能在定义它们的类中使用，在其他类中不能调用。</li>
+<li><code>缺省(default)</code>:只能在定义它们的类中，以及同包的类中被调用</li>
+<li><code>protected</code>:能在同包的类中被调用。不同包的类想调用它们，这个类必须是定义它们的类的子类</li>
+<li><code>public</code>:可以在任何一个类中被调用</li>
+</ul>
+<h2 id="2、final"><a href="#2、final" class="headerlink" title="2、final"></a>2、final</h2><p>①<code>类</code>被声明为final则不能再派生出新的类,所以一个类不能既被声明为abstract又被声明为final</p>
+<p>②<code>变量</code>被声明为final,必须在声明时初始化，且只能读取不能修改</p>
+<p>③<code>方法</code>被声明为final,不能被<code>重载</code></p>
+<blockquote>
+<p>一般会使用final和static组合来定义常量</p>
+</blockquote>
+<h2 id="3、static"><a href="#3、static" class="headerlink" title="3、static"></a>3、static</h2><p><code>static</code>可以用来修饰的类成员变量、成员方法、代码块,将独立于对象</p>
+<ol>
+<li>被修饰的元素只要类被加载了就可以通过类名访问(当然，只要权限也可以通过对象访问)</li>
+<li><code>静态方法</code>不能访问类的非静态方法和成员变量</li>
+<li><code>静态成员变量</code>会被所有的对象<code>共享</code></li>
+<li><code>静态代码块</code>会在类初始化的时候被运行一次，可以放置一些只运行一次的初始化操作</li>
+</ol>
+<p>关于static还有一个<code>类内元素加载顺序</code>的问题</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//定义一个构造代码块</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Block</span> </span>&#123;</span><br><span class="line">    Block(String who) &#123;</span><br><span class="line">        System.out.println(who+<span class="string">" new"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line"><span class="comment">//定义一个父类    </span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Father</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> Block staticblock = <span class="keyword">new</span> Block(<span class="string">"father static"</span>);</span><br><span class="line">    Block block = <span class="keyword">new</span> Block(<span class="string">"father"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">"father static block"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(<span class="string">"father block"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Father() &#123;</span><br><span class="line">        System.out.println(<span class="string">"father  constructor"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//定义一个子类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Son</span> <span class="keyword">extends</span> <span class="title">Father</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> Block staticblock = <span class="keyword">new</span> Block(<span class="string">"son static"</span>);</span><br><span class="line">     Block block = <span class="keyword">new</span> Block(<span class="string">"son"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">"son static block"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(<span class="string">"son block"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Son() &#123;</span><br><span class="line">        System.out.println(<span class="string">"son constructor"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//运行</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String argr[])</span></span>&#123;</span><br><span class="line">        Son son=<span class="keyword">new</span> Son();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果为<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">father <span class="keyword">static</span> <span class="keyword">new</span></span><br><span class="line">father <span class="keyword">static</span> block</span><br><span class="line">son <span class="keyword">static</span> <span class="keyword">new</span></span><br><span class="line">son <span class="keyword">static</span> block</span><br><span class="line">father <span class="keyword">new</span></span><br><span class="line">father block</span><br><span class="line">father constructor</span><br><span class="line">son <span class="keyword">new</span></span><br><span class="line">son block</span><br><span class="line">son constructor</span><br></pre></td></tr></table></figure></p>
+<p>可以看出加载顺序是</p>
+<ol>
+<li>父类静态成员变量</li>
+<li>父类静态代码块</li>
+<li>子类静态成员变量</li>
+<li>子类静态代码块</li>
+<li>父类非静态成员变量</li>
+<li>父类非静态代码块</li>
+<li>父类构造方法</li>
+<li>子类非静态成员变量</li>
+<li>子类非静态代码块</li>
+<li>子类构造方法</li>
+</ol>
+<p>由此也可以得知<br>执行子类构造方法之前，如果没有用 <code>super()</code> 来调用父类<code>特定的构造方</code>法，则会调用父类中<code>没有参数的构造方法</code>。因此，如果父类中只定义了<code>有参数的构造方法</code>，而在子类的构造方法中又没有用 super() 来调用父类中特定的构造方法，则编译时将发生错误</p>
+<h2 id="4、this和super"><a href="#4、this和super" class="headerlink" title="4、this和super"></a>4、this和super</h2><p><code>this</code>为当前类的引用对象，应用场景</p>
+<ul>
+<li>构造方法:通过this的调用同类中指定参数类型的构造方法<code>this(参数列表)</code>,只能用在构造方法体的第一行</li>
+<li>变量:当成员变量与局部变量重名，使用this特指<code>成员变量</code></li>
+<li>方法:在方法中引用该方法所属类的当前对象，注意不能用于static方法(this对象级别，static类级别)</li>
+</ul>
+<hr>
+<p><code>super</code>为父类存储空间标识</p>
+<ul>
+<li>构造方法:在子类构造方法中调用父类构造方法<code>super(参数列表)</code>,同样只能在构造方法体的第一行</li>
+</ul>
+<h2 id="5、instance-of"><a href="#5、instance-of" class="headerlink" title="5、instance of"></a>5、instance of</h2><p>instance of运算符是用来在运行时指出对象是否是特定类的一个实例</p>
+<h1 id="四、方法的重写和重载"><a href="#四、方法的重写和重载" class="headerlink" title="四、方法的重写和重载"></a>四、方法的重写和重载</h1><h2 id="1、重写"><a href="#1、重写" class="headerlink" title="1、重写"></a>1、重写</h2><p>子类对<code>父类允许访问的方法</code>的方法体进行覆盖并重新实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Animal</span></span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">move</span><span class="params">()</span></span>&#123;</span><br><span class="line">      System.out.println(<span class="string">"动物可以移动"</span>);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span> <span class="keyword">extends</span> <span class="title">Animal</span></span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">move</span><span class="params">()</span></span>&#123;</span><br><span class="line">      System.out.println(<span class="string">"狗可以跑和走"</span>);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestDog</span></span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span></span>&#123;</span><br><span class="line">      Animal a = <span class="keyword">new</span> Animal(); <span class="comment">// Animal 对象</span></span><br><span class="line">      Animal b = <span class="keyword">new</span> Dog(); <span class="comment">// Dog 对象</span></span><br><span class="line"></span><br><span class="line">      a.move();<span class="comment">// 执行 Animal 类的方法</span></span><br><span class="line">      b.move();<span class="comment">//执行 Dog 类的方法</span></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2、重载"><a href="#2、重载" class="headerlink" title="2、重载"></a>2、重载</h2><p>重载是在一个类里面，方法名字相同,而<code>参数的类型和个数</code>不同的方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"test1"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(<span class="keyword">int</span> a)</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"test2"</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h1 id="五、变长参数"><a href="#五、变长参数" class="headerlink" title="五、变长参数"></a>五、变长参数</h1><p>在Java方法里，允许存在变长参数，但是一个方法只能有一个变长参数，且是该方法的最后一个参数，使用方法像下面一样，用<code>...</code>表示</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Varargs</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">method</span><span class="params">(String... args)</span></span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="六、自增自减运算符"><a href="#六、自增自减运算符" class="headerlink" title="六、自增自减运算符"></a>六、自增自减运算符</h1><p>这里主要需要注意一个陷阱<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>;i&lt;<span class="number">100</span>;i++)&#123;</span><br><span class="line">    count = count++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>count++是一个有返回值的表达式，<code>返回值</code>是count自加之前的值，具体步骤是</p>
+<ol>
+<li>JVM把count值拷贝到临时变量区(0)</li>
+<li>count值加1,此时count为(1)</li>
+<li>返回临时变量区的值(0)</li>
+<li>此时count被重置为0</li>
+</ol>
+<p>也就是不管count = count++多少次，count的值,都是一样。 </p>
+<p>Java默认的自增自减运算符是线程不安全的，可以通过以下方法进行实现线程安全</p>
+<ol>
+<li>synchronized代码块或者方法</li>
+<li>使用Lock锁</li>
+<li>使用JDK提供的线程安全类<code>AtomicInteger</code>(推荐)</li>
+</ol>
+<h1 id="七、其他"><a href="#七、其他" class="headerlink" title="七、其他"></a>七、其他</h1><h2 id="1、-与-equals"><a href="#1、-与-equals" class="headerlink" title="1、== 与 equals"></a>1、== 与 equals</h2><p><code>==</code>:基础数据类型比较的是<code>值</code>，引用比较的是内存地址，即两个对象是否同一个<br><code>equals</code>:默认情况下，equals的作用与<code>==</code>一样是比较对象。<br>有些类会将equals方法重写，如<code>String</code>重写比较的是对象的值</p>
+<h2 id="2、equals-与-hashCode"><a href="#2、equals-与-hashCode" class="headerlink" title="2、equals 与 hashCode"></a>2、equals 与 hashCode</h2><p><code>hashCode</code>方法定义在Object.java中，说明任何一个Java类都有<code>hashCode</code>方法<br>hashCode的作用是获取哈希码,特点是能够根据”key”迅速获取对应的”value”,而且hashCode相等的两个对象不一定相等(碰撞)，所以比较两个对象是否相等时</p>
+<ol>
+<li>先判断hashCode是否存在相同的</li>
+<li>发现了相同hashCode的对象才会时候equals去判断</li>
+</ol>
+<p>这样会大大减少equals使用的频率，提高执行速度</p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/11/04/Java基础(二) — 基本数据类型/" title="Java基础(二) — 基本数据类型.md" class="prev">PREV</a><a href="/2019/11/02/类加载机制/" title="" class="next">NEXT</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java基础(二) — 基本数据类型.md · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java基础(二) — 基本数据类型.md - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java基础(二) — 基本数据类型.md</h1><div class="post-info">2019-11-04<p class="visit"><i data-identity="2019/11/04/Java基础(二) — 基本数据类型/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h2 id="一、基本信息"><a href="#一、基本信息" class="headerlink" title="一、基本信息"></a>一、基本信息</h2><p>以下是八大基本数据类型大小、取值、默认值、对应包装类信息</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">数据类型</th>
+<th style="text-align:center">大小</th>
+<th style="text-align:center">封装类</th>
+<th style="text-align:center">默认值</th>
+<th style="text-align:center">可表示数据范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">byte</td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">java.lang.Byte</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">-128~127(2^7)</td>
+</tr>
+<tr>
+<td style="text-align:center">short</td>
+<td style="text-align:center">16</td>
+<td style="text-align:center">java.lang.Short</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">-32768~32767(2^15)</td>
+</tr>
+<tr>
+<td style="text-align:center">int</td>
+<td style="text-align:center">32</td>
+<td style="text-align:center">java.lang.Integer</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">-2147483648 ~ 2147483647(2^31)</td>
+</tr>
+<tr>
+<td style="text-align:center">long</td>
+<td style="text-align:center">64</td>
+<td style="text-align:center">java.lang.Long</td>
+<td style="text-align:center">0L</td>
+<td style="text-align:center">-9223372036854775808 ~ 9223372036854775807 (2^63)</td>
+</tr>
+<tr>
+<td style="text-align:center">float</td>
+<td style="text-align:center">32</td>
+<td style="text-align:center">java.lang.Float</td>
+<td style="text-align:center">0F</td>
+<td style="text-align:center">1.4E-45~3.4028235E38</td>
+</tr>
+<tr>
+<td style="text-align:center">double</td>
+<td style="text-align:center">64</td>
+<td style="text-align:center">java.lang.Double</td>
+<td style="text-align:center">0D</td>
+<td style="text-align:center">4.9E-324~1.7976931348623157E308</td>
+</tr>
+<tr>
+<td style="text-align:center">char</td>
+<td style="text-align:center">16</td>
+<td style="text-align:center">java.lang.Character</td>
+<td style="text-align:center">空</td>
+<td style="text-align:center">0~65535</td>
+</tr>
+<tr>
+<td style="text-align:center">boolean</td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">java.lang.Boolean</td>
+<td style="text-align:center">false</td>
+<td style="text-align:center">true或false</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>包装类有对应最小值、最大值和大小的常量,如:<br><code>Integer.MIN_VALUE</code><br><code>Integer.MAX_VALUE</code><br><code>Integer.SIZE</code></p>
+</blockquote>
+<p>进一步可以分为以下<code>四类</code></p>
+<ul>
+<li>整型：byte(字节型)、short(短整型)、int(整型)、long(长整型)</li>
+<li>浮点型：float(单精度浮点型)、double(双精度浮点型) </li>
+<li>逻辑型：boolean(布尔型)</li>
+<li>字符型：char(字符型)</li>
+</ul>
+<h2 id="二、数据类型转换"><a href="#二、数据类型转换" class="headerlink" title="二、数据类型转换"></a>二、数据类型转换</h2><p>根据<code>取值范围的大小</code>将数据类型排序,数据类型的转换也跟这个排序有关</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span> -&gt; <span class="keyword">short</span> -&gt; <span class="keyword">int</span> -&gt; <span class="keyword">long</span> -&gt; <span class="keyword">float</span> -&gt; <span class="keyword">double</span></span><br></pre></td></tr></table></figure>
+<p>数据类型之间的转换分为两种<code>自动转换</code>和 <code>强制转换</code></p>
+<h3 id="1、自动转换"><a href="#1、自动转换" class="headerlink" title="1、自动转换"></a>1、自动转换</h3><p>在表达式中,当较”小”的数据与较”大”的数据一起进行运算时，系统会自动将”小”的数据转换成”大”的数据再进行运算<br>在调用方式时,如果<code>实参比形参&quot;小&quot;</code>,也会将”小”的数据转换成”大”的数据</p>
+<p>在表达式中，数据类型会出现<code>自动提升</code>，规则如下</p>
+<ol>
+<li>所有的byte,short,char的值将被提升为int</li>
+<li>如果有一个操作数是long，计算结果是long</li>
+<li>如果有一个操作数是float，计算结果是float</li>
+<li>如果有一个操作数是double，计算结果是double</li>
+</ol>
+<h3 id="2、强制转换"><a href="#2、强制转换" class="headerlink" title="2、强制转换"></a>2、强制转换</h3><p>将”大”数据转换成”小”数据时，就需要强制转换,并且会损失精度</p>
+<h2 id="三、包装类"><a href="#三、包装类" class="headerlink" title="三、包装类"></a>三、包装类</h2><p>java为每个基本数据类型都提供了包装类，包装类的默认值是null，并且内部提供了一些相关的操作方法。基本类型如int,直接在<code>栈中分配空间</code>,存储数值<br>包装类是对象，需要在<code>堆内存中分配空间</code>,栈中存放着对应的堆空间地址</p>
+<p>在JDK1.5以后，提供了<code>自动装箱</code>和<code>自动拆箱</code>功能这样的”语法糖”</p>
+<h3 id="1、自动装箱"><a href="#1、自动装箱" class="headerlink" title="1、自动装箱"></a>1、自动装箱</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//这是自动装箱</span></span><br><span class="line">Integer i = <span class="number">1</span>; </span><br><span class="line"><span class="comment">//转换成了</span></span><br><span class="line">Integer i = Integer.valueOf(<span class="number">1</span>);</span><br><span class="line"><span class="comment">//所以,如果给i赋值null，再赋值给基本数据类型，就会导致NullPointerException</span></span><br></pre></td></tr></table></figure>
+<p>从字节码看出也是一样的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">0</span> iconst_1</span><br><span class="line"> 1 invokestatic #2 &lt;java/lang/Integer.valueOf&gt;</span><br><span class="line"> <span class="number">4</span> astore_1</span><br><span class="line"> <span class="number">5</span> iconst_1</span><br><span class="line"> 6 invokestatic #2 &lt;java/lang/Integer.valueOf&gt;</span><br><span class="line"> <span class="number">9</span> astore_2</span><br><span class="line"><span class="number">10</span> <span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+<h3 id="2、自动拆箱"><a href="#2、自动拆箱" class="headerlink" title="2、自动拆箱"></a>2、自动拆箱</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Integer i = <span class="number">1</span>;</span><br><span class="line"><span class="comment">//自动拆箱, 在表达式中只要有一个不是包装类型的都会自动拆箱</span></span><br><span class="line"><span class="keyword">int</span> j = i;</span><br><span class="line"><span class="comment">//后面一句转换成了</span></span><br><span class="line"><span class="keyword">int</span> j = i.intValue();</span><br></pre></td></tr></table></figure>
+<p>下面是字节码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">0</span> iconst_1</span><br><span class="line"> 1 invokestatic #2 &lt;java/lang/Integer.valueOf&gt;</span><br><span class="line"> <span class="number">4</span> astore_1</span><br><span class="line"> <span class="number">5</span> aload_1</span><br><span class="line"> 6 invokevirtual #3 &lt;java/lang/Integer.intValue&gt;</span><br><span class="line"> <span class="number">9</span> istore_2</span><br><span class="line"><span class="number">10</span> aload_1</span><br><span class="line">11 invokevirtual #3 &lt;java/lang/Integer.intValue&gt;</span><br><span class="line"><span class="number">14</span> istore_3</span><br><span class="line"><span class="number">15</span> <span class="keyword">return</span></span><br></pre></td></tr></table></figure></p>
+<p>由此也可以看出，自动拆装箱属于<code>编译特性</code></p>
+<h3 id="3、缓存池"><a href="#3、缓存池" class="headerlink" title="3、缓存池"></a>3、缓存池</h3><p>在包装类中,为了<code>避免频繁地创建和销毁对象</code>，就有缓存池的出现，下面是各个包装类对应缓存池的代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Byte <span class="title">valueOf</span><span class="params">(<span class="keyword">byte</span> b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> offset = <span class="number">128</span>;</span><br><span class="line">    <span class="keyword">return</span> ByteCache.cache[(<span class="keyword">int</span>)b + offset];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Short <span class="title">valueOf</span><span class="params">(<span class="keyword">short</span> s)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> offset = <span class="number">128</span>;</span><br><span class="line">    <span class="keyword">int</span> sAsInt = s;</span><br><span class="line">    <span class="keyword">if</span> (sAsInt &gt;= -<span class="number">128</span> &amp;&amp; sAsInt &lt;= <span class="number">127</span>) &#123; <span class="comment">// must cache</span></span><br><span class="line">        <span class="keyword">return</span> ShortCache.cache[sAsInt + offset];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Short(s);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Integer <span class="title">valueOf</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (i &gt;= IntegerCache.low &amp;&amp; i &lt;= IntegerCache.high)</span><br><span class="line">        <span class="keyword">return</span> IntegerCache.cache[i + (-IntegerCache.low)];</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Integer(i);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Long <span class="title">valueOf</span><span class="params">(<span class="keyword">long</span> l)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> offset = <span class="number">128</span>;</span><br><span class="line">    <span class="keyword">if</span> (l &gt;= -<span class="number">128</span> &amp;&amp; l &lt;= <span class="number">127</span>) &#123; <span class="comment">// will cache</span></span><br><span class="line">        <span class="keyword">return</span> LongCache.cache[(<span class="keyword">int</span>)l + offset];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Long(l);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Float <span class="title">valueOf</span><span class="params">(<span class="keyword">float</span> f)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Float(f);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Double <span class="title">valueOf</span><span class="params">(<span class="keyword">double</span> d)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Double(d);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Character <span class="title">valueOf</span><span class="params">(<span class="keyword">char</span> c)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (c &lt;= <span class="number">127</span>) &#123; <span class="comment">// must cache</span></span><br><span class="line">        <span class="keyword">return</span> CharacterCache.cache[(<span class="keyword">int</span>)c];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Character(c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Boolean <span class="title">valueOf</span><span class="params">(<span class="keyword">boolean</span> b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (b ? TRUE : FALSE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Boolean TRUE = <span class="keyword">new</span> Boolean(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Boolean FALSE = <span class="keyword">new</span> Boolean(<span class="keyword">false</span>);</span><br></pre></td></tr></table></figure>
+<p>根据代码可以得知包装类的缓存池规则</p>
+<ul>
+<li><code>Byte</code>都是用缓存池里面的值</li>
+<li><code>Short、Integer、Long</code>会缓存 <code>-128~127</code></li>
+<li><code>Float和Double</code>则直接返回，因为精度数不能每次都一样，所以缓存没有意义</li>
+<li><code>Character</code>则是缓存 <code>&lt;=127</code></li>
+<li><code>Boolean</code>,只有两个值，直接就用常量的形式表示出来</li>
+</ul>
+<h2 id="四、注意"><a href="#四、注意" class="headerlink" title="四、注意"></a>四、注意</h2><ul>
+<li>double和float，不能完全表示精度。如 : 3 x 0.1 = 0.3 ,这样会是<code>false</code>,所以在进行带精度计算时，需要用到<code>BigDecimal</code></li>
+<li>switch中只能用byte、char、short、int，JDK1.7后可用String</li>
+<li>Java中的数值运算最低要求是int类型，如果参与运算的变量类型都没有超过int类型，则它们都会被自动升级为int类型再进行运算，所以它们运算后的结果类型也是int类型</li>
+<li>两边都是包装类的<code>equals</code>比较值，<code>==</code> 比较引用，其中一边是表达式的，<code>==</code> 就是比较值</li>
+<li>char存储的是<code>unicode编码字符</code>，汉字也是unicode所以可以存储，但是一些生僻字不在unicode编码字符集中就不能显示(<a href="https://blog.csdn.net/BuquTianya/article/details/80685437" target="_blank" rel="noopener">拓展资料</a>)</li>
+</ul>
+<h2 id="五、题目"><a href="#五、题目" class="headerlink" title="五、题目"></a>五、题目</h2><p>下面语句做了什么<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Integer i = <span class="number">1</span>; <span class="comment">//valueOf()自动装箱成Integer类型</span></span><br><span class="line">i+=<span class="number">1</span>;<span class="comment">//先是将Integer类型的i自动拆箱成int，完成加法运算后再自动装箱成Integer</span></span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>下面程序语句有什么问题<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">short</span> s1 = <span class="number">1</span>;</span><br><span class="line">s1 = s1 + <span class="number">1</span>;  <span class="comment">//编译不通过、需要强转</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">short</span> s2 =<span class="number">1</span>;</span><br><span class="line">s2 += <span class="number">1</span>;  <span class="comment">//正常编译,自动做了类型转换</span></span><br><span class="line"></span><br><span class="line">Integer i = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">int</span> j = i; <span class="comment">//NullPointException</span></span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>下面程序的运行结果是什么<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Integer i1 = <span class="number">128</span>;</span><br><span class="line">Integer i2 = <span class="number">128</span>;</span><br><span class="line">System.out.println(i1 == i2); <span class="comment">//false 比较了对象</span></span><br><span class="line"></span><br><span class="line">Integer i1 = <span class="number">127</span>;</span><br><span class="line">Integer i2 = <span class="number">127</span>;</span><br><span class="line">System.out.println(i1 == i2); <span class="comment">//true 缓存了-128~127</span></span><br><span class="line"></span><br><span class="line">Float f1 = <span class="number">1f</span>;</span><br><span class="line">Float f2 = <span class="number">1f</span>;</span><br><span class="line">System.out.println(f1 == f2) <span class="comment">//false 始终new新对象</span></span><br></pre></td></tr></table></figure></p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/11/04/Java基础(三) — 字符串/" title="Java基础(三) — 字符串" class="prev">PREV</a><a href="/2019/11/04/Java基础(一) — 语法/" title="Java基础(一) — 语法" class="next">NEXT</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

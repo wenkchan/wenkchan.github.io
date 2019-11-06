@@ -1,0 +1,179 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title>  · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content=" - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title"></h1><div class="post-info">2019-10-30<p class="visit"><i data-identity="2019/10/30/垃圾收集器/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h1 id="Serial收集器"><a href="#Serial收集器" class="headerlink" title="Serial收集器"></a>Serial收集器</h1><p>最原始的收集器，用于新生代,单线程,没有线程交互的开销<br>对于用在Client模式下的虚拟机是一个很好的选择</p>
+<h1 id="ParNew收集器"><a href="#ParNew收集器" class="headerlink" title="ParNew收集器"></a>ParNew收集器</h1><p>这个实际上就是Serial收集器的多线程版本<br>对于用在Server模式下的虚拟机的首选<br>而且除了Serial收集器以外，只有ParNew能于CMS收集器(并发收集器)配合工作</p>
+<blockquote>
+<p>并行:指多条垃圾收集线程并行工作,但此时用户线程仍然处于等待状态<br>并发:指用户线程与垃圾收集线程同时执行(不一定并行，可能交替执行),用户线程在继续运行，而垃圾收集程序运行于另一个CPU上</p>
+</blockquote>
+<h1 id="Parallel-Scavenge收集器"><a href="#Parallel-Scavenge收集器" class="headerlink" title="Parallel Scavenge收集器"></a>Parallel Scavenge收集器</h1><p>使用复制算法的新生代收集器,并行多线程<br>这个收集器关注点是达到一个可控制的<code>吞吐量</code></p>
+<blockquote>
+<p>吞吐量:CPU用于运行用户代码的时间与CPU总消耗时间的比值<br>即,吞吐量 = 运行用户代码时间 / (运行用户代码时间 + 垃圾收集时间)</p>
+</blockquote>
+<p>停顿时间越短越适合需要与用户交互的程序<br>高吞吐量则可以高效率地利用CPU时间，尽快完成运算任务</p>
+<p>提供了两个参数用于精确控制吞吐量</p>
+<ol>
+<li>最大垃圾收集停顿时间-XX:MaxGCPauseMillis</li>
+<li>设置吞吐量大小-XX:GCTimeRatio</li>
+</ol>
+<p>停顿时间越少，吞吐量就越少</p>
+<p><code>-XX:UseAdaptiveSizePolicy</code>是一个开关参数<br>会动态调整新生代的大小Eden与Survivor的比例，晋升老年代对象的年龄-XX:PretenureSizeThreshold,达到最合适的停顿时间或最大吞吐量,称为GC自适应的调节策略</p>
+<h1 id="Serial-Old-收集器"><a href="#Serial-Old-收集器" class="headerlink" title="Serial Old 收集器"></a>Serial Old 收集器</h1><p>这是Serial收集器的老年代版本，单线程，使用”标记-整理”算法<br>主要也是给Client模式下的虚拟机使用</p>
+<h1 id="Parallel-Old-收集器"><a href="#Parallel-Old-收集器" class="headerlink" title="Parallel Old 收集器"></a>Parallel Old 收集器</h1><p>Parallel Scavenge的老年代版本，使用多线程和”标记-整理”算法</p>
+<blockquote>
+<p>注意吞吐量以及CPU资源敏感的场合，都可以优先考虑Parallel Scavenge加Parallel Old </p>
+</blockquote>
+<h1 id="CMS收集器"><a href="#CMS收集器" class="headerlink" title="CMS收集器"></a>CMS收集器</h1><p>CMS(Concurrent Mark Sweep)收集器是一种以获取最短回收停顿时间为目标的收集器<br>重视服务的相应速度，希望系统停顿时间最短，给用户带来较好的体验，CMS就非常符合这类应用</p>
+<p>CMS是基于”标记-清除”算法实现的,运作过程分为4个步骤</p>
+<ol>
+<li>初始标记(CMS initial mark)</li>
+<li>并发标记(CMS concurrent mark)</li>
+<li>重新标记(CMS remark)</li>
+<li>并发清除(CMS concurrent sweep)</li>
+</ol>
+<p>CMS的缺点,</p>
+<ol>
+<li><code>对CPU资源非常敏感</code>，事实上并发设计的程序对CPU资源都比较敏感，并发虽然不会导致用户线程停顿，但是会因为占用了一些CPU资源而导致程序变慢，总吞吐量会降低。   <code>CMS默认启动的回收线程数是(CPU数量+3)/4</code>,也就是当CPU在4个以上时，将占用25%的CPU资源。CPU数越少，影响越大。于是出现了<code>增量式并发收集器/i-CMS</code>,也就是让GC线程和用户线程交替运行，尽量较少GC线程的独占资源的时间，垃圾回收时间会更长，但是对用户程序的影响就会显得少一些,速度下降没那么明显,但是效果一般</li>
+<li>无法处理<code>浮动垃圾</code>。浮动垃圾就是GC过程中用户线程并发产生的垃圾，当次不能处理，只能留到下次。也是由于在垃圾收集阶段用户信息还需要运行，那么就需要预留空间给用户线程使用,因此不能等老年代几乎被塞满了再收集。参数<code>-XX:CMSInitiatingOccupancyFraction</code>调高可以降低内存回收次数获得更好的性能。过高的话，内存无法满足程序运行，就会取用Serial Old</li>
+<li>标记-清除算法带来的碎片。CMS提供了-XX:UserCMSCompactAtFullCollection开关(默认开启),在CMS要Full GC的时候做碎片整理，碎片整理是无法并发的，所以停顿时间会加长，-XX:CMSFullGCsBeforeCompaction,这个参数是用于设置执行多少次不压缩的Full GC后，再执行一次压缩的(默认0，每次进入Full GC都进行碎片整理)</li>
+</ol>
+<h1 id="G1收集器"><a href="#G1收集器" class="headerlink" title="G1收集器"></a>G1收集器</h1><p>与其他收集器相比,G1具备如下特点。</p>
+<ol>
+<li>并发与并行:能通过多个CPU来缩短停顿时间,并且能通过并发的方式让Java程序继续执行</li>
+<li>分代收集:G1不需要其他收集器配合就能独立管理整个GC堆</li>
+<li>空间整合</li>
+<li>可预测的停顿</li>
+</ol>
+<p>Java对的内存布局与其他收集器有很大的差别<br>它将<code>整个</code>Java堆划分为多个<code>大小相等的独立区域</code>，虽然还保留新生代和老年代的概念，但新生代和老年代不再是物理隔离了，它们都是一部分区域的集合</p>
+<p>可预测的停顿时间模型是因为可以避免对这个Java堆进行垃圾收集，G1会跟踪分析回收价值最大的一个Region，维护一个优先列表，按优先级回收</p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/10/31/类文件结构/" title="" class="prev">PREV</a><a href="/2019/10/30/HotSpot的垃圾回收算法实现/" title="" class="next">NEXT</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

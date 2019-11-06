@@ -1,0 +1,164 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title>  · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content=" - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title"></h1><div class="post-info">2019-10-28<p class="visit"><i data-identity="2019/10/28/JVM对象相关/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h1 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h1><h5 id="检查"><a href="#检查" class="headerlink" title="检查"></a>检查</h5><p>当虚拟机遇到一条new指令时(克隆，反序列化)，首先检查这个<code>指令的参数是否能在常量池</code>中定位到一个<code>类的符号引用</code>,检查有没有被加载,解析和初始化过，如果没有，在执行相应的类加载的过程（疑问）</p>
+<h5 id="分配内存"><a href="#分配内存" class="headerlink" title="分配内存"></a>分配内存</h5><p>接下来虚拟机会为新生对象<code>分配内存</code>，分配的方式有两种</p>
+<ol>
+<li>指针碰撞<br>内存规整，用指针分开已用内存和空闲内存</li>
+<li>空闲列表<br>内存不规整，维护一个列表记录空闲的内存</li>
+</ol>
+<p>防止并发</p>
+<blockquote>
+<p>虚拟机会使用CAS配上失败重试的方式保持更新的原子性</p>
+</blockquote>
+<p>还有另外一种方法，在每个线程的Java栈中分配一小块内存，称为<code>本地线程分配缓冲(Thread Local Allocation Buffer,TLAB)</code>，哪个线程需要分配内存，就在TLAB上分配，内存用完了,同步锁定<br>是否使用TLAB，可以通过 <code>-XX:+/-UserTLAB</code>参数设定</p>
+<p>分配完成之后，分配到的内存空间都会被<code>初始化为零</code>,并且为<code>对象头赋值</code>,从虚拟机的层面来说已经创建完成了</p>
+<p>接下来执行<code>&lt;init&gt;</code>方法，按照程序员的意愿进行初始化</p>
+<h1 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h1><p>对象在内存中存储的布局可以分为3块区域:<code>对象头、实例数据、对齐填充</code></p>
+<h3 id="对象头"><a href="#对象头" class="headerlink" title="对象头"></a>对象头</h3><p>对象头分两部分信息</p>
+<ol>
+<li>对象自身的运行时数据(Mark Word)<br>Hash码,GC分代年龄，锁状态标志，线程持有的锁，偏向锁线程ID，偏向时戳</li>
+<li>类型指针，指向它的类元数据的指针</li>
+</ol>
+<h3 id="实例数据"><a href="#实例数据" class="headerlink" title="实例数据"></a>实例数据</h3><p>存储着程序代码中定义的各种类型的字段内容,包括父类的。</p>
+<p>存储顺序收到虚拟机分配策略参数(FieldsAllocationStyle)和字段在Java中定义的顺序影响<br>hotspot默认是longs/doubles,ints,shorts/chars,bytes/boolean,oops(Ordinary Object Pointers),也就是宽度的字段会分配到一起，在满足这个条件的情况下，父类定义的变量会在子类之前</p>
+<h3 id="对齐填充"><a href="#对齐填充" class="headerlink" title="对齐填充"></a>对齐填充</h3><p>这部分不是不然存在的，也没有特殊含义，起到占位符的作用，对象大小必须为8字节的倍数，不够就补齐</p>
+<h1 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h1><p>Java虚拟机规范中只规定了一个指向对象的引用，没有定义这个引用应该通过什么方式去定位<br>实际上主流的方式有两种</p>
+<ol>
+<li><p>使用句柄<br>这种方式会在Java堆中划分出一块内存作为句柄池,栈中的引用指向的就是对象的句柄地址<br>而句柄中包含了对象实例数据与类型数据各自的地址信息<br><img src="/media/15722712326856.jpg" alt=""></p>
+</li>
+<li><p>直接指针访问<br>这种方式存储的直接就是对象地址<br><img src="/media/15722712075007.jpg" alt=""></p>
+</li>
+</ol>
+<p>两种方式各有优势，使用句柄访问好处是对象被移动的时候，只需要修改句柄的实例数据指针<br>直接指针访问最大的好处就是速度快</p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/10/29/JVM回收/" title="" class="prev">PREV</a><a href="/2019/10/25/2019-10-25/" title="" class="next">NEXT</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>
