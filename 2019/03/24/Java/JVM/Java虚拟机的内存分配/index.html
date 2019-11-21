@@ -1,0 +1,205 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title>  · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content=" - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title"></h1><div class="post-info">2019-03-24<p class="visit"><i data-identity="2019/03/24/Java/JVM/Java虚拟机的内存分配/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><p>程序计数器是一块较<code>小</code>的内存空间， 在虚拟机的概念模型中，字节码解释器工作时就是通过这个计数器的值<code>选取下一条需要执行的字节码指令</code>，分支、循环、跳转、异常处理、线程恢复等</p>
+<p>因为Java虚拟机的多线程机制是<code>轮流切换</code>的,因此为了线程切换后能<code>恢复到正常的执行位置</code>,每条线程都有<code>独立的程序计数器</code>并且互相不影响,这块内存称为<code>线程私有</code></p>
+<p>如果线程执行的是<code>Java方法</code>,那么计数器记录的是正在执行的虚拟机字节码指令的地址<br>如果正在执行的是<code>Native方法</code>,那么计数器值为空</p>
+<p>程序计数器这个内存区域是在Java虚拟机规范中<code>唯一没有规定OutOfMemoryError</code>情况的区域</p>
+<hr>
+<h2 id="Java虚拟机栈"><a href="#Java虚拟机栈" class="headerlink" title="Java虚拟机栈"></a>Java虚拟机栈</h2><p>与程序计数器一样,Java虚拟机栈也是<code>私有的</code>, 生命周期与线程相同<br>虚拟机栈描述的是Java方法执行的内存区域，每个<code>方法在执行时</code>都会`创建一个栈帧,用于存储</p>
+<ol>
+<li>局部变量表</li>
+<li>操作数栈</li>
+<li>动态链接</li>
+<li>方法出口</li>
+<li>附加信息<br><img src="/media/15721709440647.jpg" alt="-w621"></li>
+</ol>
+<p>方法从<code>开始调用到执行完成</code>，对应着一个栈帧在虚拟机栈中<code>入栈到出栈</code>的过程</p>
+<p>Java虚拟机规范中,对这个区域规定了两种<code>异常</code>情况</p>
+<ol>
+<li>StackOverFlowError<br>线程请求的栈深度大于虚拟机允许的深度</li>
+<li>OutOfMemoryError<br>如果虚拟机可以动态拓展，拓展无法申请到足够的内存</li>
+</ol>
+<p>市面上流行的栈的说法指的只是<code>虚拟机栈的局部变量表</code></p>
+<h3 id="局部变量表"><a href="#局部变量表" class="headerlink" title="局部变量表"></a>局部变量表</h3><p>局部变量表（Local Variable Table）是一组变量值存储空间，用于存放<code>方法参数和方法内部定义的局部变量</code>。</p>
+<p>在Java程序编译为Class文件时,就在<code>方法的Code属性中的max_locals</code>数据项中确定了该方法所需分配的局部变量表的最大容量。(最大Slot数量)</p>
+<p>局部变量表的容量以<code>变量槽为最小单位</code>，每个变量槽都可以存储32位长度的内存空间,其中<code>long和double占用2个局部变量空间</code>,其余数据类型占用1个</p>
+<p><code>复用</code>,方法体中定义的变量，其<code>作用域并不一定会覆盖</code>整个方法体，如果当前字节码PC计数器的值已经超出了某个变量的作用域，那这个变量对应的Slot就可以交给其他变量使用<br>优点：节省栈帧空间<br>缺点：影响垃圾回收</p>
+<p>所以变量在对应的作用域执行完后,变量要注意置null</p>
+<h3 id="操作数栈"><a href="#操作数栈" class="headerlink" title="操作数栈"></a>操作数栈</h3><p>与局部变量表一样，操作数栈的<code>最大深度</code>也在编译的时候写入到<code>方法的Code属性的max_stacks数据项</code>中。</p>
+<p>单位占用上与局部变量表一样</p>
+<p>当一个方法刚刚<code>开始</code>执行时，其操作数栈是<code>空</code>的，随着方法执行和字节码指令的执行，会从<code>局部变量表或对象实例的字段中复制常量或变量</code>写入到操作数栈，再随着计算的进行将<code>栈中元素出栈到局部变量表或者返回给方法调用者</code>，也就是出栈/入栈操作。一个完整的方法执行期间往往包含多个这样出栈/入栈的过程。</p>
+<h3 id="动态连接"><a href="#动态连接" class="headerlink" title="动态连接"></a>动态连接</h3><p>在一个class文件中，一个方法要<code>调用其他方法</code>，需要将这些方法的<code>符号引用转化为其在内存地址中的直接引用</code>，而符号引用存在于<code>方法区中的运行时常量池</code>。</p>
+<p>Java虚拟机栈中，每个栈帧都包含一个指向运行时常量池中该栈所属方法的符号引用，持有这个引用的目的是为了支持方法调用过程中的<code>动态连接(Dynamic Linking)。</code></p>
+<p>这些符号引用一部分会在<code>类加载阶段或者第一次使用时就直接转化为直接引用</code>，这类转化称为<code>静态解析</code>。另一部分将在每次<code>运行期间转化为直接引用</code>，这类转化称为<code>动态连接</code></p>
+<h3 id="方法返回"><a href="#方法返回" class="headerlink" title="方法返回"></a>方法返回</h3><p>当一个方法开始执行时，可能有两种方式退出该方法：</p>
+<ol>
+<li>正常完成出口</li>
+<li>异常完成出口</li>
+</ol>
+<p><code>正常完成出口</code>:是指方法正常完成并退出，如果当前方法正常完成，则根据当前方法返回的字节码指令，这时有可能会有返回值传递给方法调用者，或者无返回值。具体是否有返回值以及返回值的数据类型将根据该<code>方法返回的字节码指令</code>确定。</p>
+<p><code>异常完成出口</code>:是指方法执行过程中遇到异常，并且这个异常在方法体内部没有得到处理，导致方法退出。</p>
+<p>无论方法采用何种方式退出，在方法<code>退出后都需要返回到方法被调用的位置</code>，程序才能继续执行，方法返回时可能需要在当前栈帧中保存一些信息，用来帮他恢复它的上层方法执行状态。</p>
+<p>方法退出过程实际上就等同于把<code>当前栈帧出栈</code>，因此退出可以执行的操作有：</p>
+<ol>
+<li>恢复上层方法的局部变量表和操作数栈，</li>
+<li>把返回值(如果有的话)压入调用者的操作数栈中，</li>
+<li>调整PC计数器的值以指向方法调用指令后的下一条指令。</li>
+</ol>
+<p>一般来说，方法正常退出时，调用者的PC计数值可以作为返回地址，栈帧中可能保存此计数值。而方法异常退出时，返回地址是通过<code>异常处理器表</code>确定的，栈帧中一般不会保存此部分信息。</p>
+<h3 id="附加信息"><a href="#附加信息" class="headerlink" title="附加信息"></a>附加信息</h3><p>虚拟机规范允许具体的虚拟机实现增加一些规范中没有描述的信息到栈帧之中，例如和调试相关的信息，这部分信息完全取决于不同的虚拟机实现</p>
+<h2 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h2><p>与虚拟机栈类似作用的栈，不同的是本地方法栈执行的是<code>Native方法</code>,虚拟机栈执行Java方法(字节码)<br>规定的异常情况也一样,包括<code>StackOverFlowError和OutOfMemoryError</code></p>
+<hr>
+<h2 id="Java堆"><a href="#Java堆" class="headerlink" title="Java堆"></a>Java堆</h2><p>对大多数应用来说，Java堆是Java虚拟机所管理的内存中最大的，被所有线程共享。<br>在虚拟机启动时创建，此内存区域<code>唯一存在</code>的目的就是<code>存放对象实例</code>,Java虚拟机规范的描述是<code>所有的对象实例以及数组都要在堆上分配</code><br>随着JIT的发展，栈上分配、标量替换等优化，对象实例也<code>不是</code>绝对会在堆上</p>
+<p>Java堆是垃圾收集器管理的主要区域(也叫GC堆,Collected Heap).<br>从内存回收角度来看因为收集器基本采用<code>分代收集算法</code>，所以分为<code>新生代和老年代</code><br>再细致的有<code>Eden空间,From Survivor空间,To Survivor空间等</code><br><code>线程共享</code>的Java堆中可能划分出多个<code>线程私有的分配缓冲区(Thread Local Allocation Buffer)</code></p>
+<p>存储的依然都是对象实例，进一步划分的目的是为了更好地回收内存，更快地分配内存</p>
+<p>Java虚拟机规定,Java堆<code>物理上不需要连续</code>，逻辑上连续即可<br>并且可以固定固定大小或者可拓展(-Xmx和-Xms)<br>当堆中没有内存并且无法拓展，将抛出<code>OutOfMemoryError</code></p>
+<p>详细的回收与分配细节-&gt;</p>
+<hr>
+<h2 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h2><p>Java虚拟机规范把方法区归为<code>堆的一个逻辑部分</code>,但它有一个别名叫<code>Non-Heap</code>(非堆),区别于Java堆</p>
+<p>与Java堆一样，是<code>线程共享</code>的内存区域<br>用于存储已经被虚拟机加载的</p>
+<ol>
+<li>类信息(版本、字段、方法、接口)</li>
+<li>常量</li>
+<li>静态变量</li>
+<li>即时编译器编译后的代码</li>
+</ol>
+<p>Java虚拟机规范中，除了和Java堆一样不需要连续的内存和可固定大小或者可拓展外，可以选择不实现垃圾回收,但是事实上还是有必要去实现。曾经的HotSpot虚拟机未对此区域进行回收导致了内存泄露</p>
+<p>当方法区无法满足内存分配时，将抛出<code>OutOfMemoryError</code></p>
+<h3 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h3><p>运行时常量池是<code>方法区的一部分</code>, 用于存放编译器产生的各种<code>字面量和符号引用</code>,在类加载后进入方法区的运行时常量池。</p>
+<p>Java虚拟机对Class文件每一部分的格式都有严格的规定，每一个字节用于存储那种数据都必须符合规范才能被虚拟机认可，装载并运行。但是对于<code>运行时常量池，就没有做任何的细节要求</code>。</p>
+<p>运行时常量池对Class文件常量池另外一个重要特征就是具备<code>动态性</code><br>也就是运行期间也可以把新的常量放入常量池中，比如说<code>String.intern()</code></p>
+<p>既然运行时常量池是方法区一部分,无法满足内存分配时，将抛出<code>OutOfMemoryError</code></p>
+<h2 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h2><p>这个部分不是Java虚拟机运行时数据区的一部分，也没有在Java虚拟机规范中定义，但是也被频繁地使用</p>
+<p>在JDK1.4中引入了NIO，引入了基于通道和缓冲区的I/O方式<br>它可以通过Native函数库直接分配对外内存，然后通过一个存储在Java堆中的DirectByteBuffer对象作为这块内存的引用进行操作,提高性能，避免Java堆和Native来回切换</p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/03/24/Java/JVM/类加载机制/" title="" class="prev">上一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

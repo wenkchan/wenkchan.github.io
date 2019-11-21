@@ -1,0 +1,195 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java基础(七) — 反射 · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java基础(七) — 反射 - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java基础(七) — 反射</h1><div class="post-info">2019-11-04<p class="visit"><i data-identity="2019/11/04/Java/Basic/Java基础(七) — 反射/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h1 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h1><p>反射允许<code>运行中</code>的Java程序获取自身的信息,并且可以操作类或者对象的内部属性</p>
+<p>反射主要提供以下功能</p>
+<ul>
+<li>在运行时判断任意一个对象所属的类；</li>
+<li>在运行时构造任意一个类的对象；</li>
+<li>在运行时判断任意一个类所具有的成员变量和方法</li>
+<li>在运行时调用任意一个对象的方法</li>
+</ul>
+<p>一般来说，反射主要用于框架开发相对较多,理解底层机制有助于丰富编程思想</p>
+<h1 id="二、基本应用"><a href="#二、基本应用" class="headerlink" title="二、基本应用"></a>二、基本应用</h1><h2 id="1、获取Class对象"><a href="#1、获取Class对象" class="headerlink" title="1、获取Class对象"></a>1、获取Class对象</h2><ol>
+<li><p>使用Class类的forName静态方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Class&lt;?&gt; forName(String className)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>直接获取某一个对象的Class</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; klass = <span class="keyword">int</span>.class;</span><br><span class="line">Class&lt;?&gt; classInt = Integer.TYPE;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>调用对象的getClass方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String str= <span class="string">"string"</span>;</span><br><span class="line">Class&lt;? extends String&gt; strClass = str.getClass();</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="2、判断是否为某个类的实例"><a href="#2、判断是否为某个类的实例" class="headerlink" title="2、判断是否为某个类的实例"></a>2、判断是否为某个类的实例</h2><p>有两种方法</p>
+<ol>
+<li>使用关键字instance of</li>
+<li>Class对象的<code>isInstance</code>方法</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">boolean</span> <span class="title">isInstance</span><span class="params">(Object obj)</span></span>;</span><br></pre></td></tr></table></figure>
+<h2 id="3、创建实例"><a href="#3、创建实例" class="headerlink" title="3、创建实例"></a>3、创建实例</h2><p>有两种方法</p>
+<ol>
+<li>使用Class对象的<code>newInstance</code>方法</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; strClass = String.class;</span><br><span class="line">String s = strClass.newInstance();</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>通过Class对象获取指定的<code>构造器Constructor</code>对象,再使用构造器的newInstance方法创建</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; strClass = String.class;</span><br><span class="line">Constructor strConstructor = strClass.getConstructor(String.class);</span><br><span class="line"></span><br><span class="line">Object obj = constructor.newInstance(<span class="string">"string"</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="4、获取方法"><a href="#4、获取方法" class="headerlink" title="4、获取方法"></a>4、获取方法</h2><p>通过Class的对象获取，主要有下面几个方法</p>
+<ol>
+<li><code>getDeclaredMethods</code>返回类或者接口声明的所有方法，包括所有修饰符的，不包括继承</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Method[] getDeclaredMethods() <span class="keyword">throws</span> SecurityException</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li><code>getDeclaredMethod</code>返回类或者接口声明的一个方法，包括所有修饰符的，不包括继承</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Method <span class="title">getDeclaredMethod</span><span class="params">(String name, Class&lt;?&gt;... parameterTypes)</span></span></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li><code>getMethods</code>返回本身和父类所有<code>public</code>的方法</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Method[] getMethods() <span class="keyword">throws</span> SecurityException</span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>getMethod</code>返回本身或父类的一个public方法，第一个参数为方法名，后面为参数对应的Class</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Method <span class="title">getMethod</span><span class="params">(String name, Class&lt;?&gt;... parameterTypes)</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="5、获取构造器信息"><a href="#5、获取构造器信息" class="headerlink" title="5、获取构造器信息"></a>5、获取构造器信息</h2><p>主要是通过Class对象的<code>getConstructor</code>方法获得Constructor对象，而且Constructor的<code>newInstance</code>方法可以通过传入的参数调用对应构造器进行创建实例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">newInstance</span><span class="params">(Object ... initargs)</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="6、获取类的成员变量信息"><a href="#6、获取类的成员变量信息" class="headerlink" title="6、获取类的成员变量信息"></a>6、获取类的成员变量信息</h2><p>与Method类似</p>
+<p><code>getDeclaredFields</code>:返回类或者接口声明的所有成员变量，包括所有修饰符的，不包括继承<br><code>getDeclaredField</code>:返回类或者接口声明的一个成员变量，包括所有修饰符的，不包括继承<br><code>getFileds</code>:返回本身和父类所有<code>public</code>的成员变量<br><code>getFiled</code>:返回本身或父类的一个public成员变量，第一个参数为方法名，后面为参数对应的Class</p>
+<h2 id="7、调用方法"><a href="#7、调用方法" class="headerlink" title="7、调用方法"></a>7、调用方法</h2><p>通过类获取到方法实例后，就可以使用<code>invoke</code>方法来调用<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object obj, Object... args)</span></span></span><br></pre></td></tr></table></figure></p>
+<p>需要点细节深入····</p>
+<h2 id="8、创建数组"><a href="#8、创建数组" class="headerlink" title="8、创建数组"></a>8、创建数组</h2><p>直接通过Array类的newInstance方法创建,通过Array的set去添加内容</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">newInstance</span><span class="params">(Class&lt;?&gt; componentType, <span class="keyword">int</span> length)</span></span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> NegativeArraySizeException </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> newArray(componentType, length);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="三、原理"><a href="#三、原理" class="headerlink" title="三、原理"></a>三、原理</h1><h1 id="四、注意"><a href="#四、注意" class="headerlink" title="四、注意"></a>四、注意</h1><p>反射会消耗一定的系统资源，非必要的情况下慎用，<br>并且反射调用方法会忽略权限检查，可能会破坏封装性导致安全问题</p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/11/04/Java/Basic/Java基础(八) — 注解/" title="Java基础(八) — 注解" class="prev">上一篇</a><a href="/2019/11/04/Java/Basic/Java基础(六) — 泛型/" title="Java基础(六) — 泛型" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

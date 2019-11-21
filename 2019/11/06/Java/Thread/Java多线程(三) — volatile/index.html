@@ -1,0 +1,188 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java多线程(三) — volatile · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java多线程(三) — volatile - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java多线程(三) — volatile</h1><div class="post-info">2019-11-06<p class="visit"><i data-identity="2019/11/06/Java/Thread/Java多线程(三) — volatile/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h1 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h1><p>Java允许线程<code>访问共享变量</code>，为了确保共享变量能被准确和一直地更新，线程应该通过<code>排他锁</code>获得这个变量，所以就有了<code>volatile</code><br>如果一个字段被声明为<code>volatile</code>,那么Java线程内存模型会确保，所有线程看到这个变量的值都是一致的</p>
+<p>简而言之，volatile有以下特性</p>
+<ul>
+<li>可见性:对一个volatile变量的读，总是能看到任意线程对这个volatile变量<code>最后的写</code></li>
+<li>原子性:对任意单个volatile变量的读/写具有原子性，但是类似i++这种操作没有</li>
+</ul>
+<p>但是volatile是无法完全保证原子性，可以采用方法有</p>
+<ol>
+<li>synchronized关键字</li>
+<li>Lock</li>
+<li>AtomicInteger等原子操作类</li>
+</ol>
+<h1 id="二、实现原理"><a href="#二、实现原理" class="headerlink" title="二、实现原理"></a>二、实现原理</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">i = i + <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p>当线程执行这条语句时</p>
+<ol>
+<li>复制一份到高速缓存</li>
+<li>执行完+1操作后的值，写入高速缓存</li>
+<li>最后再把高速缓存中的值刷新到主内存中</li>
+</ol>
+<p>在单核CPU中是没问题的，但是多核CPU就不一样了<br>线程A和线程B有可能<code>同时读取</code>一份到高速缓存，然后<code>分别操作和写入</code>到主内存中<br>期望结果是2，但是最后出来的是1</p>
+<p>被<code>volatile</code>关键字修饰的变量之后，在汇编代码中，会多出一个<code>Lock前缀指令</code><br><code>Lock前缀指令</code>在多核处理器中会发生两件事情</p>
+<ul>
+<li>将当前CPU的缓存行数据写到<code>系统内存</code></li>
+<li>其他CPU如果缓存了该内存地址的数据，会因为缓存一致性协议(MESI,嗅探技术)而被设置为无效</li>
+</ul>
+<blockquote>
+<p>缓存行： CPU Cache中的最小单位</p>
+</blockquote>
+<p>当其他CPU对这个数据进行修改操作时，会<code>重新</code>从系统内存中把数据<code>读取</code>到自己的缓存中</p>
+<h1 id="三、内存语义"><a href="#三、内存语义" class="headerlink" title="三、内存语义"></a>三、内存语义</h1><p>一旦一个共享变量（类的成员变量、类的静态成员变量）被volatile修饰之后，那么就具备了两层语义：
+　　</p>
+<ol>
+<li>一个线程<code>修改了某个变量</code>的值，这新值对其他线程来说是<code>立即可见</code>的。</li>
+<li><code>禁止</code>进行指令重排序。</li>
+</ol>
+<blockquote>
+<h2 id="指令重排序"><a href="#指令重排序" class="headerlink" title="指令重排序"></a>指令重排序</h2><p>指编译器和处理器为了优化程序性能而堆指令序列进行重新排序的一种手段 </p>
+<ul>
+<li>编译器优化重排序。编译器在<code>不改变单线程程序语义</code>的前提下，可以重新安排语句的执行顺序</li>
+<li>指令集并行重排序。如果不存在<code>数据依赖性</code>,处理器可以改变语句对应机器指令的执行顺序</li>
+<li>内存系统的重排序。由于处理器使用<code>缓存和读/写缓存区</code>，使得<code>加载和存储操作</code>看上去是乱序执行</li>
+</ul>
+</blockquote>
+<p>而为了实现volatile的内存语义，JMM会对重排序进行<code>限制</code>,在内存中，这个限制就是<code>内存屏障</code></p>
+<blockquote>
+<p>内存屏障:一组处理器指令，用于实现对内存操作的顺序限制</p>
+</blockquote>
+<h1 id="四、使用场景"><a href="#四、使用场景" class="headerlink" title="四、使用场景"></a>四、使用场景</h1><ol>
+<li>对变量的写操作不依赖当前值</li>
+<li>该变量没有包含在具有其他变量的不变式中</li>
+</ol>
+<p>这些条件表明，可以被写入 volatile 变量的这些有效值<code>独立于任何程序的状态</code>，包括变量的当前状态。</p>
+<p>状态标记量<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">volatile</span> <span class="keyword">boolean</span> flag = <span class="keyword">false</span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">while</span>(!flag)&#123;</span><br><span class="line">    doSomething();</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setFlag</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    flag = <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>double check<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Singleton</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">static</span> Singleton instance = <span class="keyword">null</span>;</span><br><span class="line">     </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span> </span>&#123;</span><br><span class="line">         </span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(instance==<span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (Singleton.class) &#123;</span><br><span class="line">                <span class="keyword">if</span>(instance==<span class="keyword">null</span>)</span><br><span class="line">                    instance = <span class="keyword">new</span> Singleton();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/11/06/Java/Thread/Java多线程(四) — synchronized/" title="Java多线程(四) — synchronized" class="prev">上一篇</a><a href="/2019/11/06/Java/Thread/Java多线程(二) — Thread类/" title="Java多线程(二) — Thread类" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

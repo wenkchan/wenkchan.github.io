@@ -1,0 +1,199 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java多线程(二) — Thread类 · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java多线程(二) — Thread类 - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java多线程(二) — Thread类</h1><div class="post-info">2019-11-06<p class="visit"><i data-identity="2019/11/06/Java/Thread/Java多线程(二) — Thread类/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h1 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h1><p>在Java中，自带对多线程技术的支持，实现多线程编程的方式主要有两种</p>
+<ul>
+<li>继承<code>Thread类</code></li>
+<li>实现<code>Runnable接口</code></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Thread</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span></span><br></pre></td></tr></table></figure>
+<p>从源码中可以看出，实际上Thread也是实现了Runnable接口，如果为了支持<code>多继承</code>可以使用实现Runnable接口这种方式，两者没有本质上的区别</p>
+<h2 id="1、继承Thread类"><a href="#1、继承Thread类" class="headerlink" title="1、继承Thread类"></a>1、继承Thread类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WKThread</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.run();</span><br><span class="line">        System.out.println(<span class="string">"I am Thread"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String argr[])</span></span>&#123;</span><br><span class="line">        WKThread wkThread=<span class="keyword">new</span> WKThread();</span><br><span class="line">        wkThread.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Thread类中的<code>start()</code>方法通知<code>线程规划器</code>通知线程已就绪，等待调用线程对象的<code>run()</code>方法,也就是等待系统分配资源调用。这样的是异步调用。<br>如果线程对象不是异步，而是同步，那么会由<code>main主线程</code>来调用run()方法，也就是必须等待run()方法完成才可执行后面的代码</p>
+<h2 id="2、实现Runnable接口"><a href="#2、实现Runnable接口" class="headerlink" title="2、实现Runnable接口"></a>2、实现Runnable接口</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WKRunnable</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"I am Runnable"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String argr[])</span> </span>&#123;</span><br><span class="line">        Runnable runnable = <span class="keyword">new</span> WKRunnable();</span><br><span class="line">        Thread thread = <span class="keyword">new</span> Thread(runnable);</span><br><span class="line">        thread.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>原理与上面相同</p>
+<blockquote>
+<h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><p>需要注意的是，使用线程的话，推荐使用<code>线程池</code>的方式去创建，而不是直接new</p>
+</blockquote>
+<h1 id="二、使用"><a href="#二、使用" class="headerlink" title="二、使用"></a>二、使用</h1><h2 id="1、Thread类的一些API"><a href="#1、Thread类的一些API" class="headerlink" title="1、Thread类的一些API"></a>1、Thread类的一些API</h2><h3 id="currentThread"><a href="#currentThread" class="headerlink" title="currentThread"></a>currentThread</h3><p><code>currentThread</code>方法可以返回当前代码段被哪个线程调用的Thread对象信息<br>比如获取线程的<code>name</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Thread.currentThread().getName();</span><br></pre></td></tr></table></figure>
+<h3 id="isAlive"><a href="#isAlive" class="headerlink" title="isAlive"></a>isAlive</h3><p>isAlive用于判断当前线程<code>是否处于活动状态</code></p>
+<h3 id="sleep"><a href="#sleep" class="headerlink" title="sleep"></a>sleep</h3><p>可以让当前线程，即<code>this.currentThread()</code>返回的线程，<code>暂停执行</code>指定毫秒数</p>
+<h3 id="getId"><a href="#getId" class="headerlink" title="getId"></a>getId</h3><p>获取线程的<code>唯一标识</code></p>
+<h3 id="yield"><a href="#yield" class="headerlink" title="yield"></a>yield</h3><p><code>yield</code>方法是放弃当前的CPU资源，将它让给其他的任务去占用CPU的时间，但是放弃的时间不确定，可能刚刚放弃又获得</p>
+<h2 id="2、停止线程"><a href="#2、停止线程" class="headerlink" title="2、停止线程"></a>2、停止线程</h2><p>一般来说会使用<code>interrupt()</code>方法去停止一个线程，但是并不会马上停止，只是在当前线程打一个标记</p>
+<blockquote>
+<p>过期的方法，stop,suspend,resume,都不能使用</p>
+</blockquote>
+<p>有两个方法可以判断线程是否处于中断状态</p>
+<ul>
+<li>interrupted:判断当前线程是否处于中断状态，并且<code>清除</code>停止状态</li>
+<li>isInterrupted:判断线程是否处于中断状态</li>
+</ul>
+<h3 id="抛出异常停止"><a href="#抛出异常停止" class="headerlink" title="抛出异常停止"></a>抛出异常停止</h3><p>如果需要马上停止一个线程，可以使用<code>抛出异常</code>的方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WKThread</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.run();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">            System.out.println(<span class="string">"I am Thread "</span> + i);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.isInterrupted()) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> InterruptedException();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="return停止"><a href="#return停止" class="headerlink" title="return停止"></a>return停止</h3><p>当然也可以使用<code>return</code>，但是最好方案还是抛出异常，因为这样可以把线程停止的事件往上传播<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WKThread</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.run();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">            System.out.println(<span class="string">"I am Thread "</span> + i);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.isInterrupted()) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果是在sleep状态下停止某一个线程，会进入catch语句，并且清除停止状态值</p>
+<h1 id="三、线程优先级"><a href="#三、线程优先级" class="headerlink" title="三、线程优先级"></a>三、线程优先级</h1><p>操作系统中，线程可以划分优先级，优先级较高的线程得到的CPU资源较多，也就是优先级高<br>但是高优先级也不一定会比低优先级的先运行，存在一定的<code>随机性</code></p>
+<p>在Java中使用<code>setPriority</code>方法来设置线程的优先级，并且分为<code>1~10</code>级，而且有几个内置常量<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="keyword">int</span> MIN_PRIORITY = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="keyword">int</span> NORM_PRIORITY = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="keyword">int</span> MAX_PRIORITY = <span class="number">10</span>;</span><br></pre></td></tr></table></figure></p>
+<p>线程优先级是有<code>继承性的</code>,即如果A线程启动B线程，那么B线程将拥有跟A线程一样的优先级</p>
+<h1 id="四、守护线程"><a href="#四、守护线程" class="headerlink" title="四、守护线程"></a>四、守护线程</h1><p>守护线程Daemon的作用是为其他线程服务,经典的例子就是GC，如果非守护线程不存在，守护线程也将结束</p>
+<h1 id="五、线程间的通信"><a href="#五、线程间的通信" class="headerlink" title="五、线程间的通信"></a>五、线程间的通信</h1><h2 id="1、等待和通知机制"><a href="#1、等待和通知机制" class="headerlink" title="1、等待和通知机制"></a>1、等待和通知机制</h2><p>等待和通知机制有三个重要方法,调用之前都必须获取对象级别的锁</p>
+<ul>
+<li>wait:使调用该方法的线程释放共享资源的锁，然后从运行状态进入到等待队列，等待唤醒</li>
+<li>notify:随机唤醒等待队列中等待<code>同一资源</code>的<code>一个</code>线程,使该线程进入可运行状态</li>
+<li>notifyAll:唤醒等待队列中等待<code>同一资源</code>的<code>所有</code>线程,进入可运行状态</li>
+</ul>
+<p>要注意的是notify所在的同步块要运行完之后才会释放锁，然后才到wait所在的代码获取锁</p>
+<h2 id="2、管道输入-输出流"><a href="#2、管道输入-输出流" class="headerlink" title="2、管道输入/输出流"></a>2、管道输入/输出流</h2><p>管道输入/输出流主要用于线程之间的数据传输，而传输的媒介为内存,包括四种类</p>
+<ul>
+<li>PipedOutputStream和PipedInputStream,面向字节</li>
+<li>PipedReader和PipedWriter,面向字符</li>
+</ul>
+<h2 id="3、join方法"><a href="#3、join方法" class="headerlink" title="3、join方法"></a>3、join方法</h2><p>如果一个线程A执行了线程B的join方法，那么含义是，当前线程A等待线程B终止后才从B.join返回</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">join</span><span class="params">(<span class="keyword">long</span> millis)</span></span></span><br><span class="line"><span class="function"><span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> base = System.currentTimeMillis();</span><br><span class="line">    <span class="keyword">long</span> now = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (millis &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"timeout value is negative"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (millis == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">while</span> (isAlive()) &#123;</span><br><span class="line">            wait(<span class="number">0</span>);<span class="comment">//使用wait方法</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (isAlive()) &#123;</span><br><span class="line">            <span class="keyword">long</span> delay = millis - now;</span><br><span class="line">            <span class="keyword">if</span> (delay &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            wait(delay);<span class="comment">//使用wait方法</span></span><br><span class="line">            now = System.currentTimeMillis() - base;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>join的内部其实也是使用了wait方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> JavaThread::run() &#123;</span><br><span class="line">  ...</span><br><span class="line">  thread_main_inner();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> JavaThread::thread_main_inner() &#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">this</span>-&gt;exit(<span class="keyword">false</span>);</span><br><span class="line">  delete <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> JavaThread::exit(bool destroy_vm, ExitType exit_type) &#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="comment">// Notify waiters on thread object. This has to be done after exit() is called</span></span><br><span class="line">  <span class="comment">// on the thread (if the thread is the last thread in a daemon ThreadGroup the</span></span><br><span class="line">  <span class="comment">// group should have the destroyed bit set before waiters are notified).</span></span><br><span class="line">  ensure_join(<span class="keyword">this</span>);</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ensure_join</span><span class="params">(JavaThread* thread)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// We do not need to grap the Threads_lock, since we are operating on ourself.</span></span><br><span class="line">  <span class="function">Handle <span class="title">threadObj</span><span class="params">(thread, thread-&gt;threadObj()</span>)</span>;</span><br><span class="line">  <span class="keyword">assert</span>(threadObj.not_null(), <span class="string">"java thread object must exist"</span>);</span><br><span class="line">  <span class="function">ObjectLocker <span class="title">lock</span><span class="params">(threadObj, thread)</span></span>;</span><br><span class="line">  <span class="comment">// Ignore pending exception (ThreadDeath), since we are exiting anyway</span></span><br><span class="line">  thread-&gt;clear_pending_exception();</span><br><span class="line">  <span class="comment">// Thread is exiting. So set thread_status field in  java.lang.Thread class to TERMINATED.</span></span><br><span class="line">  java_lang_Thread::set_thread_status(threadObj(), java_lang_Thread::TERMINATED);</span><br><span class="line">  <span class="comment">// Clear the native thread instance - this makes isAlive return false and allows the join()</span></span><br><span class="line">  <span class="comment">// to complete once we've done the notify_all below</span></span><br><span class="line">  java_lang_Thread::set_thread(threadObj(), NULL);</span><br><span class="line">  lock.notify_all(thread);</span><br><span class="line">  <span class="comment">// Ignore pending exception (ThreadDeath), since we are exiting anyway</span></span><br><span class="line">  thread-&gt;clear_pending_exception();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>join之后的唤醒在native层</p>
+<h2 id="4、ThreadLocal"><a href="#4、ThreadLocal" class="headerlink" title="4、ThreadLocal"></a>4、ThreadLocal</h2><p>ThreadLocal是当前线程自己绑定的值,数据结构是<code>key-value</code>的形式.ThreadLocal通常被private static修饰，线程结束后，ThreadLocal对应的实例副本也被回收</p>
+<h3 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h3><p>ThreadLocal内部事实上是维护了一个叫<code>ThreadLocalMap</code>的类<br>而ThreadLocalMap就是一个<code>Entry</code>的数组，<code>key值永远是ThreadLocal对象</code></p>
+<h3 id="set方法"><a href="#set方法" class="headerlink" title="set方法"></a>set方法</h3><p>从set的代码中可以看出，当发生hash冲突时，ThreadLocalMap会进行重新hash</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(ThreadLocal&lt;?&gt; key, Object value)</span> </span>&#123;</span><br><span class="line">    Entry[] tab = table;</span><br><span class="line">    <span class="keyword">int</span> len = tab.length;</span><br><span class="line">    <span class="keyword">int</span> i = key.threadLocalHashCode &amp; (len-<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (Entry e = tab[i];</span><br><span class="line">         e != <span class="keyword">null</span>;</span><br><span class="line">         e = tab[i = nextIndex(i, len)]) &#123;</span><br><span class="line">        ThreadLocal&lt;?&gt; k = e.get();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (k == key) &#123;</span><br><span class="line">            e.value = value;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (k == <span class="keyword">null</span>) &#123;</span><br><span class="line">            replaceStaleEntry(key, value, i);<span class="comment">//清除空key的entry，防止内存泄露</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    tab[i] = <span class="keyword">new</span> Entry(key, value);</span><br><span class="line">    <span class="keyword">int</span> sz = ++size;</span><br><span class="line">    <span class="keyword">if</span> (!cleanSomeSlots(i, sz) &amp;&amp; sz &gt;= threshold)</span><br><span class="line">        rehash();<span class="comment">//hash冲突，重新哈希</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 还有一个重点内容是Entry是弱引用的形式的如果ThreadLocal对应的线程一直运行那么，Entry对象中的value就有可能一直得不到回收，出现内存泄露，所以set方法中会清除空key的entry</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span> <span class="keyword">extends</span> <span class="title">WeakReference</span>&lt;<span class="title">ThreadLocal</span>&lt;?&gt;&gt; </span>&#123;</span><br><span class="line">    <span class="comment">/** The value associated with this ThreadLocal. */</span></span><br><span class="line">    Object value;</span><br><span class="line"></span><br><span class="line">    Entry(ThreadLocal&lt;?&gt; k, Object v) &#123;</span><br><span class="line">        <span class="keyword">super</span>(k);</span><br><span class="line">        value = v;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ThreadLocal使用完之后，调用<code>remove</code>是个好习惯</p>
+<h3 id="InheritableThreadLocal"><a href="#InheritableThreadLocal" class="headerlink" title="InheritableThreadLocal"></a>InheritableThreadLocal</h3><p>InheritableThreadLocal可以让子线程获得父线程的值</p>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><ul>
+<li>每个线程需要有自己单独的实例</li>
+<li>实例需要在多个方法中共享，但不希望被多线程共享</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/11/06/Java/Thread/Java多线程(三) — volatile/" title="Java多线程(三) — volatile" class="prev">上一篇</a><a href="/2019/11/06/Java/Thread/Java多线程(一) — 基本概念/" title="Java多线程(一) — 基本概念" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

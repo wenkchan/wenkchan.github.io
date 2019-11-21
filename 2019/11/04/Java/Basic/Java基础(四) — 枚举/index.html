@@ -1,0 +1,189 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java基础(四) — 枚举 · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java基础(四) — 枚举 - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java基础(四) — 枚举</h1><div class="post-info">2019-11-04<p class="visit"><i data-identity="2019/11/04/Java/Basic/Java基础(四) — 枚举/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h1 id="一、原理"><a href="#一、原理" class="headerlink" title="一、原理"></a>一、原理</h1><p>Enum实际上是一种特殊的类，编译后会转换成正常的类，如下简单定义一个枚举类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> Color &#123;</span><br><span class="line">    WHITE,BLACK</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>经过编译后就会转换成一下的样子</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//变成了final类并继承与Enum</span></span><br><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Color</span> <span class="keyword">extends</span> <span class="title">Enum</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">   <span class="comment">//前面定义的2种枚举实例</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Color WHITE;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Color BLACK;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Color $VALUES[];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> </span><br><span class="line">    &#123;    </span><br><span class="line">        <span class="comment">//实例化枚举实例</span></span><br><span class="line">        WHITE = <span class="keyword">new</span> Color(<span class="string">"WHITE"</span>, <span class="number">0</span>);</span><br><span class="line">        BLACK = <span class="keyword">new</span> Color(<span class="string">"BLACK"</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        $VALUES = (<span class="keyword">new</span> Color[] &#123;</span><br><span class="line">            WHITE, BLACK</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//编译器为我们添加的静态的values()方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Color[] values()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> (Color[])$VALUES.clone();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//编译器为我们添加的静态的valueOf()方法，注意间接调用了Enum类的valueOf方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Color <span class="title">valueOf</span><span class="params">(String s)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (Color)Enum.valueOf(Color, s);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//私有构造函数</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Color</span><span class="params">(String s, <span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(s, i);</span><br><span class="line">    &#125;</span><br><span class="line">   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="二、常见方法"><a href="#二、常见方法" class="headerlink" title="二、常见方法"></a>二、常见方法</h1><table>
+<thead>
+<tr>
+<th style="text-align:center">返回类型</th>
+<th style="text-align:center">方法名称</th>
+<th style="text-align:center">方法说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">int</td>
+<td style="text-align:center">compareTo(E o)</td>
+<td style="text-align:center">比较此枚举与指定对象的顺序</td>
+</tr>
+<tr>
+<td style="text-align:center">boolean</td>
+<td style="text-align:center">equals(Object other)</td>
+<td style="text-align:center">当指定对象等于此枚举常量时，返回 true。</td>
+</tr>
+<tr>
+<td style="text-align:center">Class&lt;?&gt;</td>
+<td style="text-align:center">getDeclaringClass()</td>
+<td style="text-align:center">返回与此枚举常量的枚举类型相对应的 Class 对象</td>
+</tr>
+<tr>
+<td style="text-align:center">String</td>
+<td style="text-align:center">name()</td>
+<td style="text-align:center">返回此枚举常量的名称，在其枚举声明中对其进行声明</td>
+</tr>
+<tr>
+<td style="text-align:center">int</td>
+<td style="text-align:center">ordinal()</td>
+<td style="text-align:center">返回枚举常量的序数（它在枚举声明中的位置，其中初始常量序数为零）</td>
+</tr>
+<tr>
+<td style="text-align:center">String</td>
+<td style="text-align:center">toString()</td>
+<td style="text-align:center">返回枚举常量的名称，它包含在声明中</td>
+</tr>
+<tr>
+<td style="text-align:center">static&lt;T extends Enum<t>&gt; T</t></td>
+<td style="text-align:center">static valueOf(Class<t> enumType, String name)</t></td>
+<td style="text-align:center">返回带指定名称的指定枚举类型的枚举常量</td>
+</tr>
+</tbody>
+</table>
+<p>值得注意的是Enum类内部会有一个构造函数，该构造函数只能有编译器调用，我们是无法手动操作的</p>
+<h1 id="三、进阶用法"><a href="#三、进阶用法" class="headerlink" title="三、进阶用法"></a>三、进阶用法</h1><h2 id="1、结合抽象方法"><a href="#1、结合抽象方法" class="headerlink" title="1、结合抽象方法"></a>1、结合抽象方法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> Color &#123;</span><br><span class="line">    WHITE&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getDesc</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">"我是白色"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,BLACK &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getDesc</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">"我是黑色"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> String <span class="title">getDesc</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String argr[])</span></span>&#123;</span><br><span class="line">        String color = Color.WHITE.getDesc();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2、结合接口"><a href="#2、结合接口" class="headerlink" title="2、结合接口"></a>2、结合接口</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Color</span> </span>&#123;</span><br><span class="line">    <span class="keyword">enum</span> DeepColor implements Color&#123;</span><br><span class="line">        DEEP_BLUE,DEEP_GREEN</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">enum</span> LightColor implements Color&#123;</span><br><span class="line">       LIGHT_BLUE,LIGHT_GREEN</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String argr[])</span></span>&#123;</span><br><span class="line">        Color color = Color.DeepColor.DEEP_BLUE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="四、辅助类"><a href="#四、辅助类" class="headerlink" title="四、辅助类"></a>四、辅助类</h1><h2 id="1、EnumMap"><a href="#1、EnumMap" class="headerlink" title="1、EnumMap"></a>1、EnumMap</h2><p>key为Enum类型的Map</p>
+<h2 id="2、EnumSet"><a href="#2、EnumSet" class="headerlink" title="2、EnumSet"></a>2、EnumSet</h2><p>元素只能为Enum的Set</p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/11/04/Java/Basic/Java基础(五) — 异常/" title="Java基础(五) — 异常" class="prev">上一篇</a><a href="/2019/11/04/Java/Basic/Java基础(三) — 字符串/" title="Java基础(三) — 字符串" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

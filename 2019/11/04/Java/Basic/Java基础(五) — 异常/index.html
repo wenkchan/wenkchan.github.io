@@ -1,0 +1,178 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java基础(五) — 异常 · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java基础(五) — 异常 - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java基础(五) — 异常</h1><div class="post-info">2019-11-04<p class="visit"><i data-identity="2019/11/04/Java/Basic/Java基础(五) — 异常/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h1 id="一、异常分类"><a href="#一、异常分类" class="headerlink" title="一、异常分类"></a>一、异常分类</h1><h2 id="1、继承关系分类"><a href="#1、继承关系分类" class="headerlink" title="1、继承关系分类"></a>1、继承关系分类</h2><p><img src="/media/15572859400020.jpg" alt="15572859400020"></p>
+<ul>
+<li><code>Throwable</code>:所有异常的<code>基类</code>,指出了代码中可以用通过异常传播机制传输Java程序任何问题的<code>共性</code></li>
+<li><code>Error</code>:是程序无法处理的错误，JVM出现的问题，例如:VirtualMachineError(JVM运行错误),OutOfMemoryError(内存不足),这些异常发生时,JVM一般会选择线程终止</li>
+<li><code>Exception</code>:程序本身可以处理的错误，Exception还有一个重要的子类<code>RunTimeException</code>,<code>RunTimeException及其子类</code>用来表示<code>JVM常用操作</code>引发的错误(NullPointerException、ArithmeticException)</li>
+</ul>
+<h2 id="2、可查和不可查"><a href="#2、可查和不可查" class="headerlink" title="2、可查和不可查"></a>2、可查和不可查</h2><p>包含Exception和Error在内，Java异常可分为<code>可查异常</code>和<code>不可查异常</code></p>
+<ul>
+<li><code>可查异常</code>:在程序正常运行中允许发生的异常，并且<code>必须进行处理</code>，否则Java编译器不会通过.</li>
+<li><code>不可查异常</code>:包含<code>RunTimeException及其子类</code>和<code>Error</code></li>
+</ul>
+<h2 id="3、运行时和非运行时"><a href="#3、运行时和非运行时" class="headerlink" title="3、运行时和非运行时"></a>3、运行时和非运行时</h2><ul>
+<li><code>运行时异常</code>:都是<code>RunTimeException及其子类</code>,一般都是程序逻辑错误引起的异常，程序中可以选择捕获处理或者不处理，如NullPointerException、IndexOutOfBoundsException</li>
+<li><code>非运行时异常(编译异常)</code>:RunTimeException以外的异常，必须处理的异常，否则编译不通过。如IOException、SQLException</li>
+</ul>
+<h1 id="二、异常处理机制"><a href="#二、异常处理机制" class="headerlink" title="二、异常处理机制"></a>二、异常处理机制</h1><h2 id="1、异常处理机制"><a href="#1、异常处理机制" class="headerlink" title="1、异常处理机制"></a>1、异常处理机制</h2><ul>
+<li><code>抛出异常</code>:当一个方法引发异常时,方法创建异常对象并交付给运行时系统,异常对象中<code>包括异常类型和异常信息</code></li>
+<li><code>捕获异常</code>:在抛出异常后，运行时系统就开始寻找合适的<code>异常处理器(exception handler)</code>,寻找的地方就是依次留在调用<code>方法栈中的方法的集合</code>,从发生异常的方法开始，依次回查栈中的方法，找到合适的异常处理器并执行，如果没找到，则运行时系统终止。同时也意味着Java程序终止</li>
+</ul>
+<h2 id="2、异常的处理方式"><a href="#2、异常的处理方式" class="headerlink" title="2、异常的处理方式"></a>2、异常的处理方式</h2><ul>
+<li>RunTimeException:由运行时系统抛出，可以忽略，</li>
+<li>Error:属于不允许发生情况，所以不捕捉</li>
+<li>可查异常:必须捕捉、或者声明抛出</li>
+</ul>
+<h2 id="3、捕捉处理异常语句"><a href="#3、捕捉处理异常语句" class="headerlink" title="3、捕捉处理异常语句"></a>3、捕捉处理异常语句</h2><p>try-catch-finally</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">catch</span>(Exception1 e)&#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">catch</span>(Exception2 e)&#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>try:用于捕捉异常,后接0~n个catch块，如果没有需要加finally</li>
+<li>catch:用于处理捕捉到的异常</li>
+<li>finally:无论是否捕捉到异常,都会执行,<code>如果try或者catch中有返回语句，那么finally会在返回之前执行</code></li>
+</ul>
+<p>以下四种情况finally不会被执行</p>
+<ul>
+<li>finally出现异常</li>
+<li>前面代码使用System.exit()退出程序</li>
+<li>程序所有线程死亡</li>
+<li>关闭CPU</li>
+</ul>
+<h2 id="4、抛出异常-throws"><a href="#4、抛出异常-throws" class="headerlink" title="4、抛出异常 throws"></a>4、抛出异常 throws</h2><p>如果当前方法可能会出现异常而没有能力去处理，可以在方法声明处用<code>throws</code>抛出异常，给上一层处理</p>
+<h3 id="抛出规则"><a href="#抛出规则" class="headerlink" title="抛出规则"></a>抛出规则</h3><ul>
+<li>对于不可查异常，不抛出也能编译通过，但是在运行时会被系统抛出</li>
+<li>可查异常，要么try-catch捕获，要么使用<code>throws</code>声明抛出</li>
+<li>抛出异常之后，方法的调用者才能进行处理，当方法调用者无法处理，应当继续抛出</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/11/04/Java/Basic/Java基础(六) — 泛型/" title="Java基础(六) — 泛型" class="prev">上一篇</a><a href="/2019/11/04/Java/Basic/Java基础(四) — 枚举/" title="Java基础(四) — 枚举" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

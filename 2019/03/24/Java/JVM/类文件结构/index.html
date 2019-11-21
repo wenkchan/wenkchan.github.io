@@ -1,0 +1,155 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title>  · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content=" - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title"></h1><div class="post-info">2019-03-24<p class="visit"><i data-identity="2019/03/24/Java/JVM/类文件结构/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h1 id="类结构"><a href="#类结构" class="headerlink" title="类结构"></a>类结构</h1><p>Class文件是一组以<code>8位字节为基础单位的二进制流</code>,各个数据紧凑地排列，中间没有任何分割符，需要占用8位以上的数据项，则会按照高位在前的方式分割成若干个8位字节进行存储</p>
+<p>Class文件格式采用类似于C语言结构体的伪结构存储数据，且只有两种数据类型<code>无符号数</code>和<code>表</code><br>无符号数属于基本数据类型，使用u1,u2,u4,u8分别代表1一个字节，2个字节，4个字节，8个字节的无符号数<br><code>无符号数</code>可以用来描述数字、索引引用、数量值或者按照UTF-8编码构成字符串值<br><code>表</code>是由多个无符号数或者其他表作为数据项构成的复合数据类型,表是由<code>_info</code>结尾,用于描述有层次关系的符合结构数据，整个Class文件本质上就是一张表<br><img src="/media/15725148670004.jpg" alt=""></p>
+<h2 id="魔数与Class文件的版本"><a href="#魔数与Class文件的版本" class="headerlink" title="魔数与Class文件的版本"></a>魔数与Class文件的版本</h2><p>每个Class文件的头4个字节称为魔数字，唯一作用是确定这个文件是否为一个能被虚拟机接收的Class文件,用作身份识别。他的值为<code>0xCAFEBABE</code>，魔数的4个字节存储的Class文件的版本号，第5和第6个字节是次版本号，第7和第8个字节是主版本号,Java的版本号是从45开始的</p>
+<h2 id="常量池"><a href="#常量池" class="headerlink" title="常量池"></a>常量池</h2><p>紧接着主版本号的是常量池入口，这个可以理解为Class文件的资源仓库,于其他项目关联最大，并且占用空间最大。<br>常量池中常量的数量是不固定的，所以在常量池的入口需要放置一项u2类型的数据，代表常量池容量计数值<br>常量池第0项空出来的，目的在于满足后面某些指向常量池的索引值的数据在特定情况下需要表达”不引用任何一个常量池项目”的含义。Class文件结构中只有这个是从1开始计数的</p>
+<p>常量池中主要存放两大类常量</p>
+<ol>
+<li>字面量(Literal)</li>
+<li>符号引用(Symbolic References)<br>字面量接近Java语言常量的概念，符号引用属于编译原理方面的概念,包含了下面三类常量</li>
+<li>类和接口的全限定名</li>
+<li>字段的名称和描述符</li>
+<li>方法的名称和描述符</li>
+</ol>
+<p>当虚拟机运行时，需要从常量池获得对应的符号引用，再在类创建时或运行时解析，翻译到具体的内存地址中。</p>
+<p>常量池的14种表类型,它们有一个共同特点，开始的第一位是一个u1类型的标志位tag，表示属于哪种常量类型。<br><img src="/media/15725694254619.jpg" alt=""></p>
+<p>各个常量表的字段及其表示含义<br><img src="/media/15725697493569.jpg" alt=""><br><img src="/media/15725697573646.jpg" alt=""></p>
+<h2 id="访问标志"><a href="#访问标志" class="headerlink" title="访问标志"></a>访问标志</h2><p>接下来就是访问标志<br><img src="/media/15725698605350.jpg" alt=""></p>
+<h2 id="类索引、父类索引与接口索引"><a href="#类索引、父类索引与接口索引" class="headerlink" title="类索引、父类索引与接口索引"></a>类索引、父类索引与接口索引</h2><p>类索引(this_class)和父类索引(super_class)都是一个u2类型的数据，而接口索引集合(interfaces)是一组u2类型的数据的集合。Class文件中由这三项数据来确定这个类的继承关系。<br>类索引用于确定这个类的全限定名<br>父类索引用于确定这个类的父类的全限定名</p>
+<h2 id="字段表集合"><a href="#字段表集合" class="headerlink" title="字段表集合"></a>字段表集合</h2><p>字段表用于描述<code>接口或类</code>中声明的变量。字段包括类级变量以及实例级变量</p>
+<p>字段表结构<br><img src="/media/15726572673399.jpg" alt=""></p>
+<p>字段访问标志<br><img src="/media/15726572833906.jpg" alt=""></p>
+<h2 id="方法表集合"><a href="#方法表集合" class="headerlink" title="方法表集合"></a>方法表集合</h2><p><img src="/media/15726573982729.jpg" alt=""></p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/03/24/Java/JVM/垃圾收集器/" title="" class="prev">上一篇</a><a href="/2019/03/24/Java/JVM/类加载机制/" title="" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

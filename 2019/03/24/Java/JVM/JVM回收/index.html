@@ -1,0 +1,175 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title>  · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content=" - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title"></h1><div class="post-info">2019-03-24<p class="visit"><i data-identity="2019/03/24/Java/JVM/JVM回收/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h1 id="判断对象是否存活"><a href="#判断对象是否存活" class="headerlink" title="判断对象是否存活"></a>判断对象是否存活</h1><p>主流的实现中使用的都是<code>可达性分析(Reachability Analysis)</code></p>
+<p>基本思想是,以一系列称为<code>GC Roots</code>的对象作为起始点,从这些节点往下开始搜索，搜索所走过的路称为<code>引用链</code>,当一个对象到GC Roots没有任何引用链相连时，证明该对象不可用</p>
+<p>在Java语言中,可作为GC Roots的对象包括</p>
+<ol>
+<li>虚拟机栈中引用的对象</li>
+<li>方法区中类静态属性引用的对象</li>
+<li>方法区中常量引用的对象</li>
+<li>本地方法栈中JNI引用的对象</li>
+</ol>
+<p>即使通过可达性分析算法中<code>不可达的对象</code>，并非”非死不可”。<br>真正要宣告一个对象死亡，至少要经历两次标记过程</p>
+<p>通过可达性分析被发现不可达后就会被标记，并且进行一次筛选<br>筛选的条件是此对象是否有必要执行<code>finalize()</code>方法，判断条件如下</p>
+<ol>
+<li>当对象没有覆盖finalize方法</li>
+<li>已经被虚拟机执行过了</li>
+</ol>
+<p>这两种情况都没有必要执行</p>
+<p>如果对象被判断有必要执行，那么这个对象就会被放置到一个<code>F-Queue</code>中，并且由虚拟机创建一个低优先级的Finalizer执行。注意这里只会是触发，不会等待运行结束。</p>
+<p>如果在finalize过程中与引用链中的对上建立了联系，那么这个对象就不会被回收。<br>反之则会被第二次标记，进行回收</p>
+<p>需要注意的是，任何对象的<code>finalize</code>方法只会被执行一次，面对下一次回收就不会被执行了</p>
+<h2 id="回收方法区-永久代"><a href="#回收方法区-永久代" class="headerlink" title="回收方法区(永久代)"></a>回收方法区(永久代)</h2><p>永久代的垃圾回收主要回收两部分</p>
+<ol>
+<li>废弃常量</li>
+<li>无用的类</li>
+</ol>
+<p>废弃常量，以常量池中的字面量为例，<br>比如字符串“abc”,如果当前系统中没有任何一个String对象是”abc”,那就会被清出常量池</p>
+<p>要清出无用的类需要满足下面3个条件</p>
+<ol>
+<li>该类所有的实例都已经被回收</li>
+<li>加载该类的ClassLoader已经被回收</li>
+<li>该类对应的Class对象没有在任何地方被引用，无法在任何地方通过反射访问</li>
+</ol>
+<h1 id="垃圾回收算法"><a href="#垃圾回收算法" class="headerlink" title="垃圾回收算法"></a>垃圾回收算法</h1><h2 id="标记-清除算法"><a href="#标记-清除算法" class="headerlink" title="标记-清除算法"></a>标记-清除算法</h2><p>分为”标记”和”清除”两个阶段。首先标记处所有需要回收的对象，标记完成后统一回收所有被标记的对象，标记的算法就是之前说的可达性算法。</p>
+<p>这是最基础的收集算法,因为后续的算法都是基于这种思路并且对其不足进行优化，主要的不足有两个</p>
+<ol>
+<li>效率<br>标记和清除两个过程的效率都不高</li>
+<li>空间<br>标记清除之后会产生大量不连续的内存碎片。空间碎片太多会到导致后面需要分配大对象时，无法获得连续的内存而不得触发另一次垃圾回收</li>
+</ol>
+<h2 id="复制算法"><a href="#复制算法" class="headerlink" title="复制算法"></a>复制算法</h2><p>为了解决效率问题而出现，它将可用内存按容量划分为<code>相等大小的两块</code>，每次只使用其中一块，当着一块用完了，就把存活的对象复制到另一快，然后把使用过的内存空间一次清理</p>
+<p>目前的商业虚拟机都采用的这种手机算法来回收新生代<br>将内存分为一块较大的<code>Eden空间和两块小的Survivor</code>,每次使用Eden和其中一块Survivor<br>当回收时，将Eden和Survivor中还存活着的对象一次性复制到另外一个Survivor，最后清理Eden和之前的Survivor，Eden和Survivor的比例是8:1<br>因为无法保证回收时存活的对象少于10%，Survivor的空间不足时，需要依赖其他的内存进行<code>分配担保</code><br>那么这些对象将直接通过分配担保机制进入老年代。<del>~</del>to be continue</p>
+<h2 id="标记-整理算法"><a href="#标记-整理算法" class="headerlink" title="标记-整理算法"></a>标记-整理算法</h2><p>复制收集算法在对象存活率较高时，需要较多的复制操作，效率会变低。<br>另外，如果不想浪费50%的空间，就需要额外的空间做分配担保，应对对象100%存活率的极端<br>标记还是使用可达性算法，整理是让所有存活的对象都向一段移动，然后直接清理掉端边界以外的内存</p>
+<h2 id="分代收集算法"><a href="#分代收集算法" class="headerlink" title="分代收集算法"></a>分代收集算法</h2><p>一般是把Java堆分为新生代和老年代<br>新生代，每次垃圾手机时都发现有大批对象死去，只有少量存活，那就复制<code>复制算法</code><br>老年代，因为存活率高，没有额外的空间分配担保，必须使用<code>标记清理或标记整理算法</code></p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/11/04/Java/Basic/Java基础(一) — 基本概念和语法/" title="Java基础(一) — 语法" class="prev">上一篇</a><a href="/2019/03/24/Java/JVM/HotSpot的垃圾回收算法实现/" title="" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

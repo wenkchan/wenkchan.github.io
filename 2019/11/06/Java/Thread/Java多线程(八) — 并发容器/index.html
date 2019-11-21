@@ -1,0 +1,145 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java多线程(八) — 并发容器 · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java多线程(八) — 并发容器 - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java多线程(八) — 并发容器</h1><div class="post-info">2019-11-06<p class="visit"><i data-identity="2019/11/06/Java/Thread/Java多线程(八) — 并发容器/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h1 id="一、CopyOnWriteArrayList"><a href="#一、CopyOnWriteArrayList" class="headerlink" title="一、CopyOnWriteArrayList"></a>一、CopyOnWriteArrayList</h1><p>一般来说，CopyOnWriteArrayList是ArrayList的线程安全版本,适合读多写少的并发场景</p>
+<p>在添加或者修改时，会复制出一个数组来完成操作，然后再将引用指向新数组，过程中用重入锁。<br>如果增删改比较多，会占用很多内存</p>
+<p>get或者遍历时，不加锁。读取的是旧的数据，因此只有数据只有最终一致性，没有实时一致性</p>
+<h1 id="二、CopyOnWriteArraySet"><a href="#二、CopyOnWriteArraySet" class="headerlink" title="二、CopyOnWriteArraySet"></a>二、CopyOnWriteArraySet</h1><p>CopyOnWriteArraySet内部容器是CopyOnWriteArrayList，在加入容器时，进行了addIfAbsent的判断，防止加入相同元素</p>
+<h1 id="三、ConcurrentSkipListMap"><a href="#三、ConcurrentSkipListMap" class="headerlink" title="三、ConcurrentSkipListMap"></a>三、ConcurrentSkipListMap</h1><p>ConcurrentSkipListMap一般来说是TreeMap的线程安全版本，内部通过链表的<code>跳表</code>和<code>CAS</code>来实现的</p>
+<blockquote>
+<p>##跳表<br>跳表是一种使用”空间换时间”的概念用来提高查询效率的链表<br><img src="/media/15743077510829.jpg" alt=""><br>特性:<br>1.由很多层组成，level越搞的层级点越少<br>2.每一层的节点数据也都是有顺序的<br>3.上面层的节点肯定会在下面层出现<br>4.每一个节点都有两个指针，分别是同一层的下一个节点和下一层节点的指针</p>
+<p>查询元素的时候从最上层开始找，根据比较逐渐往下缩小范围</p>
+<p>新增元素会先确定Level层，在当前level和以下的level都加入新的元素<br>而层数是通过一种随机算法获取的,如果Level大于跳表的层数,那么会新增一层</p>
+</blockquote>
+<h1 id="四、ConcurrentSkipListSet"><a href="#四、ConcurrentSkipListSet" class="headerlink" title="四、ConcurrentSkipListSet"></a>四、ConcurrentSkipListSet</h1><p>ConcurrentSkipListSet内部是基于ConcurrentSkipListMap实现的，在加入容器时，进行了putIfAbsent的判断，防止加入相同元素</p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/11/06/Java/Thread/Java多线程(九) — 原子操作/" title="Java多线程(九) — 原子操作" class="prev">上一篇</a><a href="/2019/11/06/Java/Thread/Java多线程(七) — Queue/" title="Java多线程(七) — Queue" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java基础(九) — 其他 · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java基础(九) — 其他 - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java基础(九) — 其他</h1><div class="post-info">2019-11-07<p class="visit"><i data-identity="2019/11/07/Java/Basic/Java基础(九) — 其他/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h1 id="一、-与equals"><a href="#一、-与equals" class="headerlink" title="一、==与equals"></a>一、==与equals</h1><p><code>==</code>:基础数据类型比较的是<code>值</code>，引用比较的是内存地址，即两个对象是否同一个<br><code>equals</code>:默认情况下，equals的作用与<code>==</code>一样是比较对象。<br>有些类会将equals方法重写，如<code>String</code>重写比较的是对象的值</p>
+<h1 id="二、equals与hashCode"><a href="#二、equals与hashCode" class="headerlink" title="二、equals与hashCode"></a>二、equals与hashCode</h1><p><code>hashCode</code>方法定义在Object.java中，说明任何一个Java类都有<code>hashCode</code>方法<br>hashCode的作用是获取哈希码,特点是能够根据”key”迅速获取对应的”value”,而且hashCode相等的两个对象不一定相等(碰撞)，所以比较两个对象是否相等时</p>
+<ol>
+<li>先判断hashCode是否存在相同的</li>
+<li>发现了相同hashCode的对象才会时候equals去判断</li>
+</ol>
+<p>这样会大大减少equals使用的频率，提高执行速度</p>
+<h1 id="三、类内元素加载顺序"><a href="#三、类内元素加载顺序" class="headerlink" title="三、类内元素加载顺序"></a>三、类内元素加载顺序</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//定义一个构造代码块</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Block</span> </span>&#123;</span><br><span class="line">    Block(String who) &#123;</span><br><span class="line">        System.out.println(who+<span class="string">" new"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line"><span class="comment">//定义一个父类    </span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Father</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> Block staticblock = <span class="keyword">new</span> Block(<span class="string">"father static"</span>);</span><br><span class="line">    Block block = <span class="keyword">new</span> Block(<span class="string">"father"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">"father static block"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(<span class="string">"father block"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Father() &#123;</span><br><span class="line">        System.out.println(<span class="string">"father  constructor"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//定义一个子类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Son</span> <span class="keyword">extends</span> <span class="title">Father</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> Block staticblock = <span class="keyword">new</span> Block(<span class="string">"son static"</span>);</span><br><span class="line">     Block block = <span class="keyword">new</span> Block(<span class="string">"son"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">"son static block"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(<span class="string">"son block"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Son() &#123;</span><br><span class="line">        System.out.println(<span class="string">"son constructor"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//运行</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String argr[])</span></span>&#123;</span><br><span class="line">        Son son=<span class="keyword">new</span> Son();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果为<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">father <span class="keyword">static</span> <span class="keyword">new</span></span><br><span class="line">father <span class="keyword">static</span> block</span><br><span class="line">son <span class="keyword">static</span> <span class="keyword">new</span></span><br><span class="line">son <span class="keyword">static</span> block</span><br><span class="line">father <span class="keyword">new</span></span><br><span class="line">father block</span><br><span class="line">father constructor</span><br><span class="line">son <span class="keyword">new</span></span><br><span class="line">son block</span><br><span class="line">son constructor</span><br></pre></td></tr></table></figure></p>
+<p>可以看出加载顺序是</p>
+<ol>
+<li>父类静态成员变量</li>
+<li>父类静态代码块</li>
+<li>子类静态成员变量</li>
+<li>子类静态代码块</li>
+<li>父类非静态成员变量</li>
+<li>父类非静态代码块</li>
+<li>父类构造方法</li>
+<li>子类非静态成员变量</li>
+<li>子类非静态代码块</li>
+<li>子类构造方法</li>
+</ol>
+<p>由此也可以得知<br>执行子类构造方法之前，如果没有用 <code>super()</code> 来调用父类<code>特定的构造方</code>法，则会调用父类中<code>没有参数的构造方法</code>。因此，如果父类中只定义了<code>有参数的构造方法</code>，而在子类的构造方法中又没有用 super() 来调用父类中特定的构造方法，则编译时将发生错误</p>
+<h1 id="四、引用类型"><a href="#四、引用类型" class="headerlink" title="四、引用类型"></a>四、引用类型</h1><p>在Java中，Java.lang.ref是Java类库中比较特殊的一个包，它提供了与Java垃圾回收器密切相关的引用类，分别有以下四种</p>
+<table>
+<thead>
+<tr>
+<th>引用类型</th>
+<th>取得对象的方式</th>
+<th>垃圾回收条件</th>
+<th>是否可能内存泄露</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>强引用</td>
+<td>调用new</td>
+<td>不回收</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>软引用</td>
+<td>通过get()方法</td>
+<td>内存低时回收</td>
+<td>不可能</td>
+</tr>
+<tr>
+<td>弱引用</td>
+<td>通过get()方法</td>
+<td>下一次GC</td>
+<td>不可能</td>
+</tr>
+<tr>
+<td>虚引用</td>
+<td>无法获得</td>
+<td>不回收</td>
+<td>可能</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1、强引用"><a href="#1、强引用" class="headerlink" title="1、强引用"></a>1、强引用</h2><p>如果一个对象具有强引用，那么垃圾回收器绝对不会回收他，即时抛出异常</p>
+<h2 id="2、软引用"><a href="#2、软引用" class="headerlink" title="2、软引用"></a>2、软引用</h2><p>如果一个对象具有软引用，内存足够的不会被回收，内存不足时就会被回收，可以用于实现内存敏感的高速缓存<br>软引用可以与引用队列(ReferenceQueue)联合使用，如果软引用被回收了，就会被加入这个队列中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ReferenceQueue&lt;String[]&gt; referenceQueue = <span class="keyword">new</span> ReferenceQueue&lt;String[]&gt;();</span><br><span class="line">SoftReference&lt;String[]&gt; softBean = <span class="keyword">new</span> SoftReference&lt;String[]&gt;(<span class="keyword">new</span> String[]&#123;<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>&#125;, referenceQueue);</span><br></pre></td></tr></table></figure>
+<h2 id="3、弱引用"><a href="#3、弱引用" class="headerlink" title="3、弱引用"></a>3、弱引用</h2><p>弱引用，一旦被发现一定会回收。但是垃圾回收器线程优先级比较低，不一样会马上发现<br>弱引用也可以与引用队列(ReferenceQueue)联合使用，如果弱引用被回收了，就会被加入这个队列中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ReferenceQueue&lt;String[]&gt; referenceQueue = <span class="keyword">new</span> ReferenceQueue&lt;String[]&gt;();</span><br><span class="line">WeakReference&lt;String[]&gt; softBean = <span class="keyword">new</span> WeakReference&lt;String[]&gt;(<span class="keyword">new</span> String[]&#123;<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>&#125;, referenceQueue);</span><br></pre></td></tr></table></figure>
+<h2 id="4、虚引用"><a href="#4、虚引用" class="headerlink" title="4、虚引用"></a>4、虚引用</h2><p>“虚引用”顾名思义，就是形同虚设。那么它就和没有任何引用一样，在任何时候都可能被垃圾回收器回收。<br>虚引用<code>必须</code>和引用队列 （ReferenceQueue）联合使用。当垃圾回收器准备回收一个对象时，如果发现它还有虚引用，就会在回收对象的内存之前，把这个虚引用加入到与之 关联的引用队列中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ReferenceQueue&lt;String[]&gt; referenceQueue = <span class="keyword">new</span> ReferenceQueue&lt;String[]&gt;();</span><br><span class="line">PhantomReference&lt;String[]&gt; referent = <span class="keyword">new</span> PhantomReference&lt;String&gt;(<span class="keyword">new</span> String[]&#123;<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>&#125;, referenceQueue);</span><br></pre></td></tr></table></figure>
+<h1 id="五、克隆"><a href="#五、克隆" class="headerlink" title="五、克隆"></a>五、克隆</h1><p>为了快速构造一个和原有对象相同的副本，不比手动进行复制，所以就有了克隆这个操作<br>克隆涉及到的方法就是<code>Obejct的clone</code>方法,任何克隆的过程都得经过这个方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">native</span> Object <span class="title">clone</span><span class="params">()</span> <span class="keyword">throws</span> CloneNotSupportedException</span>;</span><br></pre></td></tr></table></figure></p>
+<p>克隆分为<code>浅克隆</code>和<code>深克隆</code>,下面定义两个类来做一下实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> <span class="keyword">implements</span> <span class="title">Cloneable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">private</span> Teacher teacher;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">(String name, <span class="keyword">int</span> age, Teacher teacher)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">        <span class="keyword">this</span>.teacher = teacher;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Teacher</span> <span class="keyword">implements</span> <span class="title">Cloneable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> String course;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Teacher</span><span class="params">(String name, String course)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.course = course;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="1、浅克隆"><a href="#1、浅克隆" class="headerlink" title="1、浅克隆"></a>1、浅克隆</h2><p>浅克隆的效果是复制出来的对象的<code>所有变量与原来对象相同</code>,而所有的对其他对象的引用仍然指向原对象<br><img src="/media/15730947779220.jpg" alt="-w500"></p>
+<p>克隆对象实现一下<code>Cloneable</code>接口，并且在克隆的方法里面调用<code>super.clone()</code>就会返回克隆后的对象<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> <span class="keyword">implements</span> <span class="title">Cloneable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">private</span> Teacher teacher;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">(String name, <span class="keyword">int</span> age, Teacher teacher)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">        <span class="keyword">this</span>.teacher = teacher;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Student <span class="title">clone</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Student student = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            student = (Student) <span class="keyword">super</span>.clone();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (CloneNotSupportedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> student;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>测试代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span>  </span>&#123;</span><br><span class="line">      Teacher teacher = <span class="keyword">new</span> Teacher(<span class="string">"王老师"</span>, <span class="string">"英语"</span>);</span><br><span class="line">      Student student = <span class="keyword">new</span> Student(<span class="string">"小明"</span>, <span class="number">11</span>, teacher);</span><br><span class="line"></span><br><span class="line">      Student clone = student.clone();</span><br><span class="line">      clone.setName(<span class="string">"小强"</span>);</span><br><span class="line">      clone.setAge(<span class="number">20</span>);</span><br><span class="line">      clone.getTeacher().setName(<span class="string">"李老师"</span>);</span><br><span class="line"></span><br><span class="line">      System.out.println(student.getName() + <span class="string">" "</span> + student.getAge());</span><br><span class="line">      System.out.println(clone.getName() + <span class="string">" "</span> + clone.getAge());</span><br><span class="line">      System.out.println(clone.getTeacher() == student.getTeacher());</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>最后输出结果<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">小明 <span class="number">11</span></span><br><span class="line">小强 <span class="number">20</span></span><br><span class="line"><span class="keyword">true</span></span><br></pre></td></tr></table></figure></p>
+<p>由上面的结果可知道，克隆出来的对象name和age都是新的，而对象引用teacher还是原来的</p>
+<h2 id="2、普通深克隆"><a href="#2、普通深克隆" class="headerlink" title="2、普通深克隆"></a>2、普通深克隆</h2><p>深克隆的效果是，克隆出来所有变量都含有与原来对象相同的值，而引用指向的对象也是新创建的。</p>
+<p>如果要实现深克隆，克隆对象里面的对象类型也<code>必须</code>要实现Cloneable接口并调用clone()<br>对Teacher类进行修改<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Teacher</span> <span class="keyword">implements</span> <span class="title">Cloneable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> String course;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Teacher</span><span class="params">(String name, String course)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.course = course;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Teacher <span class="title">clone</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Teacher clone = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            clone = (Teacher) <span class="keyword">super</span>.clone();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (CloneNotSupportedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> clone;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>测试代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Teacher teacher = <span class="keyword">new</span> Teacher(<span class="string">"王老师"</span>, <span class="string">"英语"</span>);</span><br><span class="line">Student student = <span class="keyword">new</span> Student(<span class="string">"小明"</span>, <span class="number">11</span>, teacher);</span><br><span class="line"></span><br><span class="line">Student clone = student.clone();</span><br><span class="line">clone.setName(<span class="string">"小强"</span>);</span><br><span class="line">clone.setAge(<span class="number">20</span>);</span><br><span class="line">clone.getTeacher().setName(<span class="string">"李老师"</span>);</span><br><span class="line"></span><br><span class="line">System.out.println(student.getName() + <span class="string">" "</span> + student.getAge());</span><br><span class="line">System.out.println(clone.getName() + <span class="string">" "</span> + clone.getAge());</span><br><span class="line">System.out.println(clone.getTeacher() == student.getTeacher());</span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">小明 <span class="number">11</span></span><br><span class="line">小强 <span class="number">20</span></span><br><span class="line"><span class="keyword">false</span></span><br></pre></td></tr></table></figure>
+<p>从输出结果就可以得知，两个对象的Teacher已经不是同一个了，但是，如果克隆的对象存在比较长的继承链，实现深克隆就必须每一层去实现Cloneable方法。但是有一个简便的方法，序列化克隆</p>
+<h2 id="3、serializable深克隆"><a href="#3、serializable深克隆" class="headerlink" title="3、serializable深克隆"></a>3、serializable深克隆</h2><p>把对象序列化写进一个流里面，再读取出来，就是一个新的对象了</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> <span class="keyword">implements</span>  <span class="title">Serializable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">private</span> Teacher teacher;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">(String name, <span class="keyword">int</span> age, Teacher teacher)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">        <span class="keyword">this</span>.teacher = teacher;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Student <span class="title">serializableClone</span><span class="params">()</span> <span class="keyword">throws</span> IOException, ClassNotFoundException </span>&#123;</span><br><span class="line">        Student clone;</span><br><span class="line"></span><br><span class="line">        ByteArrayOutputStream bo = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        ObjectOutputStream oo = <span class="keyword">new</span> ObjectOutputStream(bo);</span><br><span class="line">        oo.writeObject(<span class="keyword">this</span>);</span><br><span class="line">        ByteArrayInputStream bi = <span class="keyword">new</span> ByteArrayInputStream(bo.toByteArray());</span><br><span class="line">        ObjectInputStream oi = <span class="keyword">new</span> ObjectInputStream(bi);</span><br><span class="line">        clone = (Student) oi.readObject();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> clone;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/11/08/Java/Collections/Java集合(六) — Set/" title="Java集合(六) — Set" class="prev">上一篇</a><a href="/2019/11/06/Java/Thread/Java多线程(十一) — 线程池/" title="Java多线程(十一) — 线程池" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

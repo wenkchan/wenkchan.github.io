@@ -1,0 +1,328 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java多线程(五) — Lock · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java多线程(五) — Lock - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java多线程(五) — Lock</h1><div class="post-info">2019-11-06<p class="visit"><i data-identity="2019/11/06/Java/Thread/Java多线程(五) — Lock/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h1 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h1><p>Lock是用来控制多个线程访问共享资源的方式，于synchronized的功能类似，但是在Lock的<code>获取，释放，超时和可中断</code>的功能上具有更加灵活的可操作性。比如以下的一些特定</p>
+<ul>
+<li>尝试非阻塞获取锁</li>
+<li>能被中断地获取锁</li>
+<li>超时获取锁</li>
+</ul>
+<p>Lock是一个接口,定义了锁获取和释放的一些基本操作<br><img src="/media/15740434164198.jpg" alt="-w290"></p>
+<ul>
+<li>lock():获取锁，调用该方法当前线程将会获得锁，获得锁之后，从该方法返回</li>
+<li>lockInterruptible():中断地获取锁，即在锁获取中可以中断当前线程</li>
+<li>tryLock():尝试非堵塞获取锁,获取到则返回ture，否则返回false</li>
+<li>tryLock(long,TimeUnit):超时获取锁</li>
+<li>unLock():释放锁</li>
+<li>newCondition():获取等待通知组件，该组件和当前的锁绑定，当前线程只有获取了锁，才能调用该组件的wait()方法，调用后，当前线程将释放锁</li>
+</ul>
+<h1 id="二、AQS"><a href="#二、AQS" class="headerlink" title="二、AQS"></a>二、AQS</h1><h2 id="1、概述"><a href="#1、概述" class="headerlink" title="1、概述"></a>1、概述</h2><p>AQS全称<code>AbstractQueuedSynchronizer</code>(队列同步器),用于构建锁或者其他同步组件的基础框架</p>
+<p>AQS内部维护了一个<code>(FIFO的双向队列)</code>同步队列来完成同步状态的管理<br>当前线程获取同步状态失败时，同步器会将当前线程和等待状态等信息构造成一个<code>节点(Node)</code>,加入同步队列。<br>同时<code>阻塞</code>当前线程，当同步状态释放时，会把<code>首节点</code>中的线程唤醒，使其<code>再次尝试获取</code>同步状态。<br>首节点获取成功后，会继续唤醒<code>后继节点</code>尝试获取同步状态</p>
+<h3 id="Node的信息"><a href="#Node的信息" class="headerlink" title="Node的信息"></a>Node的信息</h3><table>
+<thead>
+<tr>
+<th>属性类型和名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int waitStatus</td>
+<td>等待状态 <br> CANCELLED 1 取消等待 <br> SIGNAL -1 当前节点线程释放同步状或取消后,通知后继节点 <br> CONDITION -2 等待在Condition中 <br> PROPAGATE -3 下一次共享式同步状态获取将无条件地传播下去 <br> INITIAL 0 初始状态</td>
+</tr>
+<tr>
+<td>Node pre</td>
+<td>前驱节点，尾插</td>
+</tr>
+<tr>
+<td>Node next</td>
+<td>后继节点</td>
+</tr>
+<tr>
+<td>Node nextWaiter</td>
+<td>等待队列中的后继节点</td>
+</tr>
+<tr>
+<td>thread Thread</td>
+<td>获取同步状态的线程</td>
+</tr>
+</tbody>
+</table>
+<h3 id="可重写方法"><a href="#可重写方法" class="headerlink" title="可重写方法"></a>可重写方法</h3><p>AQS是一个抽象类，支持独占式和共享式地获取状态。抽象类中支持重写的方法有</p>
+<table>
+<thead>
+<tr>
+<th>方法名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>protected boolean tryAcquire(int arg)</td>
+<td>独占式获取同步状态，实现该方法需要查询当前状态并判断同步状态是否符合预期，然后用CAS设置同步状态</td>
+</tr>
+<tr>
+<td>protected boolean tryRelease(int arg)</td>
+<td>独占式释放同步状态,等待获取同步状态的线程将有机会获取同步状态</td>
+</tr>
+<tr>
+<td>protected int tryAcquireShared(int arg)</td>
+<td>共享式获取同步状态,返回大于等于0的值,表示获取成功，反之，获取失败</td>
+</tr>
+<tr>
+<td>protected boolean tryReleaseShared(int arg)</td>
+<td>共享式释放同步状态</td>
+</tr>
+<tr>
+<td>protected boolean isHeldExclusively()</td>
+<td>当前同步器是否在独占模式下被线程占用,一般该方法表示是否被当前线程独占</td>
+</tr>
+</tbody>
+</table>
+<h3 id="模板方法"><a href="#模板方法" class="headerlink" title="模板方法"></a>模板方法</h3><p>AQS简化了锁的实现方式，屏蔽了<code>同步状态管理，线程排队，等待和唤醒</code>这些底层操作,并提供了一些模板方法</p>
+<table>
+<thead>
+<tr>
+<th>方法名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>void acquire(int arg)</td>
+<td>独占式获取同步状态，如果当前线程获取状态成功，则返回。否则，进入同步队列等待，该方法会调用重写的tryAcquire(int arg)</td>
+</tr>
+<tr>
+<td>void acquireInterruptibly(int arg)</td>
+<td>与acquire(int arg)相同,多了响应中断</td>
+</tr>
+<tr>
+<td>boolean tryAcquireNanos(int arg,long nanos)</td>
+<td>在acquireInterruptibly(int arg)基础上加了超时限制，</td>
+</tr>
+<tr>
+<td>void acquireShared(int arg)</td>
+<td>共享式的获取同步状态</td>
+</tr>
+<tr>
+<td>void acquireSharedinterruptibly(int arg)</td>
+<td>于acquireShared(int arg)相同，多了响应中断</td>
+</tr>
+<tr>
+<td>tryAcquireSharedNanos</td>
+<td>acquireSharedinterruptibly(int arg)基础上加了超时限制</td>
+</tr>
+<tr>
+<td>boolean release(int arg)</td>
+<td>独占式的释放同步状态，该方法会在释放同步状态后，将同步队列中第一个节点包含的线程唤醒</td>
+</tr>
+<tr>
+<td>boolean releaseShared(int arg)</td>
+<td>共享式的释放同步状态</td>
+</tr>
+<tr>
+<td>Collection<thread>getQueuedThreads()</thread></td>
+<td>获取等待在同步队列上的线程集合</td>
+</tr>
+</tbody>
+</table>
+<p>模板方法基本上分为<code>三类</code></p>
+<ul>
+<li>独占式获取于释放同步状态</li>
+<li>共享式获取与释放同步状态</li>
+<li>查询同步队列中的等待线程情况</li>
+</ul>
+<p>AQS内部也提供了三个方法对同步状态进行更改</p>
+<ul>
+<li>getState():获取当前同步状态</li>
+<li>setState(int newState):设置当前同步状态</li>
+<li>compareAndSetState(int expect,int update):使用CAS设置当前状态，保证原子性</li>
+</ul>
+<h2 id="2、独占式同步状态"><a href="#2、独占式同步状态" class="headerlink" title="2、独占式同步状态"></a>2、独占式同步状态</h2><p>通过调用<code>acquire</code>方法可以获取同步状态<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp; <span class="comment">//调用自定义的方法获取同步状态</span></span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg)) <span class="comment">//获取失败构造节点进入同步队列</span></span><br><span class="line">        selfInterrupt();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>下面是，构造节点进入同步队列相关的代码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">addWaiter</span><span class="params">(Node mode)</span> </span>&#123;</span><br><span class="line">    Node node = <span class="keyword">new</span> Node(Thread.currentThread(), mode);</span><br><span class="line">    <span class="comment">//尝试在尾部添加新节点</span></span><br><span class="line">    Node pred = tail;</span><br><span class="line">    <span class="keyword">if</span> (pred != <span class="keyword">null</span>) &#123;</span><br><span class="line">        node.prev = pred;</span><br><span class="line">        <span class="keyword">if</span> (compareAndSetTail(pred, node)) &#123;</span><br><span class="line">            pred.next = node;</span><br><span class="line">            <span class="keyword">return</span> node;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    enq(node);</span><br><span class="line">    <span class="keyword">return</span> node;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//自旋，直到节点添加成功为止</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">enq</span><span class="params">(<span class="keyword">final</span> Node node)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        Node t = tail;</span><br><span class="line">        <span class="keyword">if</span> (t == <span class="keyword">null</span>) &#123; <span class="comment">// Must initialize</span></span><br><span class="line">            <span class="keyword">if</span> (compareAndSetHead(<span class="keyword">new</span> Node()))</span><br><span class="line">                tail = head;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            node.prev = t;</span><br><span class="line">            <span class="keyword">if</span> (compareAndSetTail(t, node)) &#123;</span><br><span class="line">                t.next = node;</span><br><span class="line">                <span class="keyword">return</span> t;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>下面是队列通过自旋尝试获取同步状态的方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">acquireQueued</span><span class="params">(<span class="keyword">final</span> Node node, <span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> failed = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">final</span> Node p = node.predecessor();</span><br><span class="line">            <span class="keyword">if</span> (p == head &amp;&amp; tryAcquire(arg)) &#123;<span class="comment">//只有前驱节点是头结点可以获取同步状态</span></span><br><span class="line">                setHead(node);</span><br><span class="line">                p.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                failed = <span class="keyword">false</span>;</span><br><span class="line">                <span class="keyword">return</span> interrupted;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后就是释放了<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">release</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tryRelease(arg)) &#123;</span><br><span class="line">        Node h = head;<span class="comment">//新的头结点</span></span><br><span class="line">        <span class="keyword">if</span> (h != <span class="keyword">null</span> &amp;&amp; h.waitStatus != <span class="number">0</span>)</span><br><span class="line">            unparkSuccessor(h);<span class="comment">//唤醒新的头节点的后继节点</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>小结</p>
+<ol>
+<li>acquire调用尝试获取同步状态,成功则返回，不成功则进入addWaiter同步队列自旋判断自身前继节点是否头结点</li>
+<li>如果是,acquireQueued尝试获取同步状态，移除队列，获取成功并执行相应逻辑后,设置为新的头节点</li>
+<li>通过release唤醒后继结点进行自旋获取同步状态</li>
+</ol>
+<h2 id="3、共享式同步状态"><a href="#3、共享式同步状态" class="headerlink" title="3、共享式同步状态"></a>3、共享式同步状态</h2><p>共享式和独占式区别在于在<code>同一时刻</code>是否能有<code>多个线程</code>获取到同步状态<br>比如文件的读可以同时进行，写需要独占</p>
+<p>当共享式访问资源时，其他共享式的访问都会被允许，而独占式访问会被阻塞<br>独占式访问资源时,同一时刻其他访问会被堵塞</p>
+<p>通过<code>acquireShared</code>可以共享地获取同步状态<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquireShared</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tryAcquireShared(arg) &lt; <span class="number">0</span>) <span class="comment">//调用重写的tryAcquireShared获取同步状态</span></span><br><span class="line">        doAcquireShared(arg);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doAcquireShared</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Node node = addWaiter(Node.SHARED);</span><br><span class="line">    <span class="keyword">boolean</span> failed = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123; <span class="comment">//自旋获取</span></span><br><span class="line">            <span class="keyword">final</span> Node p = node.predecessor();</span><br><span class="line">            <span class="keyword">if</span> (p == head) &#123;</span><br><span class="line">                <span class="keyword">int</span> r = tryAcquireShared(arg);</span><br><span class="line">                <span class="keyword">if</span> (r &gt;= <span class="number">0</span>) &#123; <span class="comment">//获取成功</span></span><br><span class="line">                    setHeadAndPropagate(node, r);</span><br><span class="line">                    p.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                    <span class="keyword">if</span> (interrupted)</span><br><span class="line">                        selfInterrupt();</span><br><span class="line">                    failed = <span class="keyword">false</span>;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>下面是释放共享式的方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">releaseShared</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tryReleaseShared(arg)) &#123;</span><br><span class="line">        doReleaseShared();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>释放同步状态后，唤醒后继节点，这里与独占式的区别是，tryReleaseShared必须确认同步状态线程安全释放(自旋CAS)</p>
+<h1 id="三、ReentrantLock"><a href="#三、ReentrantLock" class="headerlink" title="三、ReentrantLock"></a>三、ReentrantLock</h1><h2 id="1、概述-1"><a href="#1、概述-1" class="headerlink" title="1、概述"></a>1、概述</h2><p>ReentrantLock支持重进入的锁，表示该锁能支持<code>一个线程对资源重复加锁</code>。同时还支持公平与非公平的选择<br>这里的公平指的是，在绝对时间上，先进行获取锁请求的一定先被满足，反之是不公平<br>事实上公平的锁往往没有非公平的效率高(线程切换).公平锁主要功能是减少<code>饥饿</code>发生的概率，等待越久的请求越是优先满足</p>
+<h2 id="2、实现"><a href="#2、实现" class="headerlink" title="2、实现"></a>2、实现</h2><p>重进入是指任意线程在获取到锁之后能够再次获取该锁而不会被阻塞,需要解决两个问题</p>
+<ul>
+<li>线程再次获取锁<br>识别获取锁的线程是否为当前占据锁的线程</li>
+<li>锁的最终释放<br>线程重复获取了多少次锁，就得有多少次释放，获取自增，释放自减，为0时表示锁已成功释放</li>
+</ul>
+<h1 id="四、ReentrantReadWriteLock"><a href="#四、ReentrantReadWriteLock" class="headerlink" title="四、ReentrantReadWriteLock"></a>四、ReentrantReadWriteLock</h1><h2 id="1-概述"><a href="#1-概述" class="headerlink" title="1.概述"></a>1.概述</h2><p>ReentrantReadWriteLock是读写锁，维护了一个<code>读锁</code>和一个<code>写锁</code>,读锁可以允许多个线程访问，写锁阻塞访问<br>读写锁有以下特性</p>
+<ul>
+<li>保证写操作对读操作的可见性,如果存在读锁，则写锁不能被获取</li>
+<li>有公平锁和非公平锁之分</li>
+<li>支持重入,读锁获取了，还可以再次获取。写锁获取了，读写锁都可以再次获取</li>
+<li>支持锁降级，同一个线程中，在没有释放写锁的情况下，可以申请读锁</li>
+</ul>
+<h2 id="2-实现"><a href="#2-实现" class="headerlink" title="2.实现"></a>2.实现</h2><p>读写锁也是基于AQS实现的，但是只有一个整形变量，所以，读写锁以按位切割的方式把变量分成了两个部分<br><code>高16位表示读，低16位表示写</code></p>
+<h1 id="五、工具"><a href="#五、工具" class="headerlink" title="五、工具"></a>五、工具</h1><h2 id="1、LockSupport"><a href="#1、LockSupport" class="headerlink" title="1、LockSupport"></a>1、LockSupport</h2><p>当需要阻塞或唤醒一个线程的时候，需要LockSupport，LockSupport定义了一组公共静态方法，提供了最基本的线程阻塞和唤醒功能，而LockSupport也成为构建同步组件的基础工具。</p>
+<table>
+<thead>
+<tr>
+<th>方法名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>void park()</td>
+<td>阻塞当前线程，如果调用unpark(Thread thread)方法或当前线程被中断,才能从park()</td>
+</tr>
+<tr>
+<td>void parkNanos(long nanos)</td>
+<td>在park()基础上增加了超时返回</td>
+</tr>
+<tr>
+<td>void parkUntil(long deadline)</td>
+<td>阻塞当前线程指导，deadline,毫秒</td>
+</tr>
+<tr>
+<td>void unpack(Thread thread)</td>
+<td>唤醒指定线程</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2、Condition"><a href="#2、Condition" class="headerlink" title="2、Condition"></a>2、Condition</h2><p>Condition跟Lock配合可以实现<code>等待/通知模式</code>,比Object自带的有一些加强<br>使用上比较简单，调用Lock的<code>newCondition</code>即可<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Lock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">Condition condition = lock.newCondition();</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">conditionWait</span> <span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        condition.await();<span class="comment">//释放锁并等待</span></span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">conditionSignal</span> <span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        condition.signal();<span class="comment">//通知当前线程从await返回,并且返回前获取了锁</span></span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/11/06/Java/Thread/Java多线程(六) — ConcurrentHashMap/" title="Java多线程(六) — ConcurrentHashMap" class="prev">上一篇</a><a href="/2019/11/06/Java/Thread/Java多线程(四) — synchronized/" title="Java多线程(四) — synchronized" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

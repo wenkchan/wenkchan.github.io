@@ -1,0 +1,160 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java基础(六) — 泛型 · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java基础(六) — 泛型 - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java基础(六) — 泛型</h1><div class="post-info">2019-11-04<p class="visit"><i data-identity="2019/11/04/Java/Basic/Java基础(六) — 泛型/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h1 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h1><p>“泛型”简单的意思就是泛指的类型(<code>参数化类型</code>)。主要作用是限制只能往集合中添加<code>一种类型</code>的数据，让错误在<code>编译期</code>暴露，避免运行时异常的发生，提升代码的健壮性。</p>
+<h1 id="二、使用"><a href="#二、使用" class="headerlink" title="二、使用"></a>二、使用</h1><h2 id="1、泛型类"><a href="#1、泛型类" class="headerlink" title="1、泛型类"></a>1、泛型类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GenericClass</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    T item;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setData</span><span class="params">(T t)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.item = t;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">getData</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.item;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>泛型类定义时只需在类名后面加上<code>类型参数</code>，当然也可以添加多个参数，类似于&lt;T,S&gt;。这样就可以在类里面使用定义的类型参数。</p>
+<h2 id="2、泛型方法"><a href="#2、泛型方法" class="headerlink" title="2、泛型方法"></a>2、泛型方法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GenericClass</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    T item;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setData</span><span class="params">(T t)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.item = t;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">getData</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.item;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> &lt;I&gt; <span class="function"><span class="keyword">void</span> <span class="title">getInfo</span><span class="params">(I i)</span> </span>&#123;</span><br><span class="line">    	System.out.println(i);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>泛型方法声明的方式就是在权限修饰符和返回值之间加上<code>&lt;I&gt;</code>或者任意其他的标识,而里面的<code>I</code>跟类<code>T</code>就算是用一样的标识，也不会是同一个类型，两者作用域不一样。</p>
+<h2 id="3、泛型接口"><a href="#3、泛型接口" class="headerlink" title="3、泛型接口"></a>3、泛型接口</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">GenericInterface</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">next</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GenericClass</span> <span class="keyword">implements</span> <span class="title">GenericInterface</span>&lt;<span class="title">String</span>&gt;</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>泛型接口在实现时，需要将实参传入，并且接口中使用了参数对应的地方类型也要与传入实参一致</p>
+<h1 id="三、类型擦除"><a href="#三、类型擦除" class="headerlink" title="三、类型擦除"></a>三、类型擦除</h1><h2 id="1、描述"><a href="#1、描述" class="headerlink" title="1、描述"></a>1、描述</h2><p>泛型在设计时，为了兼容旧版本，Java使用了<code>类型擦除机制</code>。即泛型的参数类型只存在于编译期，运行期获取不到任何已经声明的类型信息,但是会保证类和参数内部参数类型一致。如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; class1=<span class="keyword">new</span> ArrayList&lt;String&gt;().getClass();</span><br><span class="line">Class&lt;?&gt; class2=<span class="keyword">new</span> ArrayList&lt;Integer&gt;().getClass();</span><br><span class="line">System.out.println(class1);		<span class="comment">//class java.util.ArrayList</span></span><br><span class="line">System.out.println(class2);		<span class="comment">//class java.util.ArrayList</span></span><br><span class="line">System.out.println(class1.equals(class2));<span class="comment">//true</span></span><br></pre></td></tr></table></figure>
+<p>泛型参数会被擦除到它的<code>第一边界</code>,如果没有边界。类型将被<code>擦除到Object</code><br>边界可以有多个，使用<code>extends</code>参数可以给参数类型添加一个边界<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Color</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">c</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Animal</span>&lt;<span class="title">T</span> <span class="keyword">extends</span> <span class="title">Color</span>&gt; </span>&#123;</span><br><span class="line">    T desc;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">getDesc</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> desc;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setDesc</span><span class="params">(T desc)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.descj = desc;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p> extends关键字后后面的类型信息决定了泛型参数能保留的信息。Java类型擦除只会擦除到Color类型。</p>
+<h2 id="2、原理"><a href="#2、原理" class="headerlink" title="2、原理"></a>2、原理</h2><p>在编译过程中，类型变量信息还能获取到，所以<code>set的时可以做类型检查</code>，非法类型不能通过编译<br>为了”还原”返回结果的类型，编译器在<code>get之后添加了类型转换</code></p>
+<h2 id="3、缺陷与补救"><a href="#3、缺陷与补救" class="headerlink" title="3、缺陷与补救"></a>3、缺陷与补救</h2><p>泛型不能显示地运用在运行时类型的操作中，类似于转型、instance of和new，当然也有相应的方法替换</p>
+<h3 id="类型判断"><a href="#类型判断" class="headerlink" title="类型判断"></a>类型判断</h3><p>使用时，把类型参数的Class对象记录</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GenericType</span>&lt;<span class="title">T</span>&gt;</span>&#123;</span><br><span class="line">    Class&lt;?&gt; classType;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">GenericType</span><span class="params">(Class&lt;?&gt; type)</span> </span>&#123;</span><br><span class="line">        classType=type;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isInstance</span><span class="params">(Object object)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> classType.isInstance(object);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">GenericType&lt;A&gt; genericType=<span class="keyword">new</span> GenericType&lt;&gt;(A.class);</span><br><span class="line">System.out.println(<span class="string">"------------"</span>);</span><br><span class="line">System.out.println(genericType.isInstance(<span class="keyword">new</span> A()));</span><br><span class="line">System.out.println(genericType.isInstance(<span class="keyword">new</span> B()));</span><br></pre></td></tr></table></figure>
+<h3 id="创建类型实例"><a href="#创建类型实例" class="headerlink" title="创建类型实例"></a>创建类型实例</h3><p>使用工厂模式和泛型方法来创建实例对象。代码变动的话，添加新的工厂即可</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Factory</span>&lt;<span class="title">T</span>&gt;</span>&#123;</span><br><span class="line">    <span class="function">T <span class="title">create</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Creater</span>&lt;<span class="title">T</span>&gt;</span>&#123;</span><br><span class="line">    T instance;</span><br><span class="line">    <span class="keyword">public</span> &lt;F extends Factory&lt;T&gt;&gt; <span class="function">T <span class="title">newInstance</span><span class="params">(F f)</span> </span>&#123;</span><br><span class="line">    	instance=f.create();</span><br><span class="line">    	<span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IntegerFactory</span> <span class="keyword">implements</span> <span class="title">Factory</span>&lt;<span class="title">Integer</span>&gt;</span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">create</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    	Integer integer=<span class="keyword">new</span> Integer(<span class="number">9</span>);</span><br><span class="line">    	<span class="keyword">return</span> integer;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Creater&lt;Integer&gt; creater=<span class="keyword">new</span> Creater&lt;&gt;();</span><br><span class="line">System.out.println(creater.newInstance(<span class="keyword">new</span> IntegerFactory()));</span><br></pre></td></tr></table></figure>
+<h1 id="四、泛型通配符"><a href="#四、泛型通配符" class="headerlink" title="四、泛型通配符"></a>四、泛型通配符</h1><h2 id="1、上界通配符"><a href="#1、上界通配符" class="headerlink" title="1、上界通配符"></a>1、上界通配符</h2><p><code>&lt;? extends C&gt;</code>这种形式的通配符，可以实现泛型的<code>向上转型</code>,以ArrayList为例，可以包含的元素就是<code>C</code>的一种子类型(包含C),称为<code>子类型边界</code></p>
+<p>其中能使用的方法有<code>contains、indexOf</code>等形参为<code>Object</code>的方法，<br>还有<code>get</code>是可以，但是只能当做是<code>Object</code>处理<br>但是<code>add(T t)</code>就不行,因为不清楚集合里面的元素是什么类型，所以无法加入任何对象</p>
+<h2 id="2、下界通配符"><a href="#2、下界通配符" class="headerlink" title="2、下界通配符"></a>2、下界通配符</h2><p><code>&lt;? super C&gt;</code>这种形式的通配符,以ArrayList为例，可以包含的元素就是<code>C</code>(包含C)的<code>超类型</code>,即从当前类的父类直至Object类,称为<code>超类型边界</code></p>
+<p>而能使用的方法只是<code>add</code>,能插入的元素要么是A，要么是A的父类，<code>如果B和C继承于A,且A有一个父类D,那么D也是A和B的父类</code></p>
+<p>不能<code>get</code>，因为不能确定操作的数据是属于哪种类型,除非拿出来当做<code>Object</code>处理</p>
+<p>结合上下界通配符，可以这样写入元素,来自<code>Collectoins#copy</code>方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">copy</span><span class="params">(List&lt;? <span class="keyword">super</span> T&gt; destination, List&lt;? extends T&gt; source)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (destination.size() &lt; source.size()) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException(<span class="string">"destination.size() &lt; source.size(): "</span> +</span><br><span class="line">                destination.size() + <span class="string">" &lt; "</span> + source.size());</span><br><span class="line">    &#125;</span><br><span class="line">    Iterator&lt;? extends T&gt; srcIt = source.iterator();</span><br><span class="line">    ListIterator&lt;? <span class="keyword">super</span> T&gt; destIt = destination.listIterator();</span><br><span class="line">    <span class="keyword">while</span> (srcIt.hasNext()) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            destIt.next();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchElementException e) &#123;</span><br><span class="line">            <span class="comment">// <span class="doctag">TODO:</span> AssertionError?</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException(<span class="string">"Source size "</span> + source.size() +</span><br><span class="line">                    <span class="string">" does not fit into destination"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        destIt.set(srcIt.next());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<h3 id="PECS原则"><a href="#PECS原则" class="headerlink" title="PECS原则"></a>PECS原则</h3><p>上界&lt;? extends T&gt;不能往里存，只能往外取，适合频繁往外面读取内容的场景。<br>下界&lt;? super T&gt;不影响往里存，但往外取只能放在Object对象里，适合经常往里面插入数据的场景。</p>
+</blockquote>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/11/04/Java/Basic/Java基础(七) — 反射/" title="Java基础(七) — 反射" class="prev">上一篇</a><a href="/2019/11/04/Java/Basic/Java基础(五) — 异常/" title="Java基础(五) — 异常" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>

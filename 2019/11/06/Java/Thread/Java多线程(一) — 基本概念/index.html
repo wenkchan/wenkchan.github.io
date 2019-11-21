@@ -1,0 +1,199 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java多线程(一) — 基本概念 · Wenk.Chan的个人博客</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java多线程(一) — 基本概念 - Wenk.Chan"><meta name="keywords"><meta name="author" content="Wenk.Chan"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="Wenk.Chan的个人博客"><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java多线程(一) — 基本概念</h1><div class="post-info">2019-11-06<p class="visit"><i data-identity="2019/11/06/Java/Thread/Java多线程(一) — 基本概念/" class="article-timer"></i><span>次访问</span></p></div><div class="post-content"><h1 id="一、线程的基本概念"><a href="#一、线程的基本概念" class="headerlink" title="一、线程的基本概念"></a>一、线程的基本概念</h1><h2 id="并行和并发"><a href="#并行和并发" class="headerlink" title="并行和并发"></a>并行和并发</h2><ul>
+<li>并发是相对一个CPU,分时间片执行任务,同一<code>时间间隔</code>事件</li>
+<li>并行是相对多个CPU,分别同时执行任务,同一<code>时间点</code>事件</li>
+</ul>
+<h2 id="并行和串行"><a href="#并行和串行" class="headerlink" title="并行和串行"></a>并行和串行</h2><ul>
+<li>串行是执行完一个任务再去执行下一个</li>
+<li>并行是多个任务同时执行</li>
+</ul>
+<h2 id="同步和异步"><a href="#同步和异步" class="headerlink" title="同步和异步"></a>同步和异步</h2><ul>
+<li>同步是<code>顺序进行</code>，需要进行等待，协调</li>
+<li>异步在等待某一个任务执行过程中继续执行自己的任务,线程是实现异步的一个方式</li>
+</ul>
+<h2 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h2><p>多线程是程序设计的<code>逻辑概念</code>，指的是在进程中并发运行的一段<code>代码</code>，实现多个线程间切换执行</p>
+<h1 id="二、Java线程的状态"><a href="#二、Java线程的状态" class="headerlink" title="二、Java线程的状态"></a>二、Java线程的状态</h1><p>在Java类库,<code>Thread类</code>中有一个<code>State的枚举类</code>列出了线程的<code>6个状态</code></p>
+<ul>
+<li>初始(NEW)：<code>新创建</code>了一个线程对象，但还没有调用start()方法。</li>
+<li><p>可运行(RUNNABLE)：Java线程中将<code>就绪（ready）</code>和<code>运行中（running）</code>两种状态笼统地称为”运行”。<br>调用了start()方法。线程位于<code>可运行线程池</code>中,<code>等待被线程调度</code>选中，此时处于<code>就绪状态（ready）</code>。就绪状态的线程在<code>获得CPU时间片后</code>变为运行中状态（running）。</p>
+</li>
+<li><p>阻塞(BLOCKED)：表示线程<code>阻塞于锁</code>。</p>
+</li>
+<li><p>等待(WAITING)：进入该状态的线程需要等待其他线程<code>做出一些特定动作</code>（通知或中断）。</p>
+</li>
+<li><p>超时等待(TIMED_WAITING)：该状态不同于WAITING，它可以在指定的时间后<code>自行返回</code>。</p>
+</li>
+<li><p>终止(TERMINATED)：表示该线程已经<code>执行完毕</code>。</p>
+</li>
+</ul>
+<h1 id="三、并发编程需要注意的地方"><a href="#三、并发编程需要注意的地方" class="headerlink" title="三、并发编程需要注意的地方"></a>三、并发编程需要注意的地方</h1><p>并行并发不一定就比串行快，因为线程的创建和上下文切换也需要开销</p>
+<ul>
+<li>lmbench3可以测量上下文切换的时长</li>
+<li>vmstat可以测量上下文切换的次数</li>
+</ul>
+<p>减少上下文切换的方法</p>
+<ul>
+<li>无锁并发编程:使用一些方法来避免用锁</li>
+<li>CAS:使用Atomic包的CAS算法更新数据，不用加锁</li>
+<li>避免使用不必要的线程</li>
+<li>协程:单线程实现多任务调度</li>
+</ul>
+<h2 id="1、-减少waiting线"><a href="#1、-减少waiting线" class="headerlink" title="1、 减少waiting线"></a>1、 减少waiting线</h2><ol>
+<li>使用jstack工具dump出对应进程的线程信息</li>
+<li>查看哪些线程waiting比较多</li>
+<li>根据线程对应的程序调整</li>
+</ol>
+<h2 id="2、避免死锁的方法"><a href="#2、避免死锁的方法" class="headerlink" title="2、避免死锁的方法"></a>2、避免死锁的方法</h2><ul>
+<li>避免一个线程获取多个锁</li>
+<li>避免一个线程在锁内获取多个资源</li>
+<li>尝试使用定时锁</li>
+<li>数据库锁，加锁解锁都必须在同一个数据库连接</li>
+</ul>
+<h2 id="3、各种操作的一些资源利用"><a href="#3、各种操作的一些资源利用" class="headerlink" title="3、各种操作的一些资源利用"></a>3、各种操作的一些资源利用</h2><p>下载文件</p>
+<ul>
+<li>带宽</li>
+<li>硬盘读写速度</li>
+</ul>
+<p>数据库操作</p>
+<ul>
+<li>数据库连接数</li>
+</ul>
+<h2 id="4、线程安全"><a href="#4、线程安全" class="headerlink" title="4、线程安全"></a>4、线程安全</h2><p>当<code>多个线程</code>访问一个类时，如果<code>不考虑</code>这些线程在运行时环境下的<code>调度和交替执行</code>，并且<code>不需要额外</code>的同步及在调用方代码不必作其他的协调，这个类的行为仍是正确的，那么称这个类是<code>线程安全</code>的</p>
+<p>并发编程中两个关键问题：线程之间如何通信和线程之间如何同步<br>通信机制有两种：共享内存和消息传递</p>
+<p>而Java的方法用的是共享内存模型，Java线程间的通信总是隐式进行。</p>
+<p><a href="https://zhuanlan.zhihu.com/p/34678757" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/34678757</a></p>
+<p><a href="https://blog.csdn.net/SEU_Calvin/article/details/52411531" target="_blank" rel="noopener">https://blog.csdn.net/SEU_Calvin/article/details/52411531</a></p>
+<p>原子性操作原理</p>
+</div></article></div><div class="right-container"><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/11/06/Java/Thread/Java多线程(二) — Thread类/" title="Java多线程(二) — Thread类" class="prev">上一篇</a><a href="/2019/11/06/Java/Collections/Java集合(五) — LinkedList/" title="Java集合(五) — LinkedList" class="next">下一篇</a></div><a href="#comment" class="comment-anchor"></a><div id="vcomments"></div><script>new Valine({
+    el: "#vcomments",
+    appId: "aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz",
+    appKey: "FdzS5SOPHdhYQoEUngQ8K2QW",
+    notify: false,
+    verify: false,
+    avatar: "robohash",
+    visitor: true,
+    placeholder: "随便说点什么～.～",
+});</script><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="/scripts/ar-anchor.js"></script><script src="/scripts/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script><script>const valineAPI = (() => {
+try {
+    AV.init("aD8jJBpu4oew3ovNY73z6Rdq-gzGzoHsz", "FdzS5SOPHdhYQoEUngQ8K2QW");
+} catch(error) {}
+const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+    query.equalTo("identity", identity);
+    query.find().then(results => {
+        resolve(results.length > 0);
+    }, error => reject(error));
+    })
+}
+
+const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+    let querys = [];
+    for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+    }
+    query = AV.Query.or.apply(null ,querys);
+    } else {
+    identity = identity || getRealPath();
+    query = new AV.Query("Timer");
+    query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+    query.find()
+    .then(results => resolve(results))
+    .catch(error => reject(error))
+    })
+}
+
+const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let Todo = AV.Object.extend('Timer');
+    let todo = new Todo();
+    todo.set("times", 1);
+    todo.set("identity", identity);
+    todo.save().then(res => resolve(true), error => reject(error));
+    })
+}
+
+const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+    let query = new AV.Query('Timer');
+    query.equalTo("identity", identity);
+    query.find().then(todos => {
+        todos.forEach(todo => {
+        todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+    }).then(todos => resolve(true), error => reject(error));
+    })
+}
+
+return {
+    isExist,
+    _get,
+    update,
+    create
+}
+})()
+
+const calcAndWriteTimes = () => {
+let isPost = true;
+
+let timerAllDOM = document.querySelectorAll(".article-timer");
+
+if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+    if(exist) {
+        return valineAPI.update(identity);
+    }
+    return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+}
+
+let timerDOMCache = {};
+
+for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+    timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+    timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+    };
+    }
+}
+
+let identities = Object.keys(timerDOMCache);
+valineAPI._get(identities).then(results => {
+    for(let result of results) {
+    let {identity, times} = result.attributes;
+    timerDOMCache[identity].times = times;
+    timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+    if(timerDOMCache[identity].times){
+        continue;
+    }
+    timerDOMCache[identity].dom.map(item => item.innerText = 1);
+    valineAPI.create(identity);
+    }
+}).catch(error => console.log(error.message))
+}
+
+if(true){
+calcAndWriteTimes();
+}</script></body></html>
